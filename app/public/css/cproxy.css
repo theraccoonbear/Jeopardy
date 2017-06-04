@@ -1,0 +1,17 @@
+body {
+	background-color: #ccc;
+}
+.main-container {
+	margin-top: 70px;
+}
+
+.notification-container {
+	position: fixed;
+	right: 15px;
+	top: 70px;
+	text-align: right;
+}
+
+.btn .glyphicon {
+	font-size: 1.6em;
+}

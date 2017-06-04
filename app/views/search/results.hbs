@@ -1,0 +1,45 @@
+{{#if searched}}
+<h1>Search results for &ldquo;{{term}}&rdquo;</h1>
+{{/if}}
+<div class="form-group">
+	<label for="search">Search {{type}} <input type="text" class="form-input" id="search" value="{{term}}"></label>
+	<input type="hidden" id="searchType" value="{{type}}">
+	<button class="btn btn-primary" id="searchButton">Search</button>
+</div>
+{{#if searched}}
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>&nbsp;</th>
+				<th>Name</th>
+				<th>Age</th>
+				<th>Provider</th>
+				<th>Size</th>
+		</thead>
+		<tbody>
+			{{#each results}}
+			<tr>
+				<td>
+					{{#if isDownloading}}
+						<a href="/cancel/{{@idx}}" class="download-link btn btn-danger btn-sm" data-nzb="{{getnzb}}" data-title="{{release}}">
+							<span class="glyphicon glyphicon-remove"></span>
+						</a>
+					{{else}}
+						<a href="/download/{{@idx}}" class="download-link btn btn-primary btn-sm" data-nzb="{{getnzb}}" data-title="{{release}}">
+							<span class="glyphicon glyphicon-download"></span>
+						</a>
+					{{/if}}
+				</td><td>
+					<strong>{{release}}</strong>
+				</td><td>
+					{{daysOld usenetage}} day(s) old
+				</td><td>
+					<span class="provider">{{provider}}</span>
+				</td><td>
+					<em>{{bytes sizebytes}}</em>
+				</td>	
+			</tr>
+			{{/each}}
+		</tbody>
+	</table>
+{{/if}}

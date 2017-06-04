@@ -1,0 +1,57 @@
+version: '2'
+services:
+  cproxy-www:
+    build: .
+    hostname: cproxy
+    environment:
+      - DBNAME=cproxy
+      - DBUSER=cproxy
+      - DBPASS=password
+      - DBHOST=cproxy-mongodb
+      - DBPORT=27017
+    container_name: 'cproxy-www'
+    ports:
+      - '5000:5000'
+    volumes:
+      - '.:/opt/src'
+    networks:
+      - app
+    links:
+      - 'cproxy-mongodb:cproxy-mongodb'
+      #- 'sabnzbd:sabnzbd'
+    entrypoint: /opt/src/util/run
+    depends_on:
+      - cproxy-mongodb
+
+  cproxy-mongodb:
+    hostname: cproxy-monogodb
+    container_name: cproxy-mongodb
+    image: mongo:latest
+    networks:
+      - app
+    ports:
+      - '27017:27017'
+    volumes:
+      - cproxy-mongodb-storage:/data/mongo
+  
+  #sabnzbd:
+  #  image: theraccoonbear/sabnzbd:latest
+  #  container_name: sabnzbd
+  #  ports:
+  #    - '9090:9090'
+  #    #- '8080:8080'
+  #  volumes:
+  #    - './src:/opt/src'
+  #    #- '.:/opt/src'
+  #   
+  #  networks:
+  #    - app
+
+volumes:
+  cproxy-mongodb-storage: 
+
+networks:
+  default:
+    driver: bridge
+  app:
+    driver: bridge

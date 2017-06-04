@@ -1,0 +1,34 @@
+#!/bin/bash
+
+REPO_DIR=/opt/src/special/medac
+REPO_LIB_DIR=$REPO_DIR/medac/lib/Medac
+LIB_DIR=/opt/src/lib/Medac
+
+if [ -d "$REPO_DIR" ]; then
+  echo "Medac already downloaded"
+	cd $REPO_DIR
+	echo "Getting current..."
+	git stash
+	git checkout master
+	git pull
+else
+	echo "Did not find Medac, installing..."
+
+	git clone https://github.com/theraccoonbear/medac.git $REPO_DIR
+	
+	cd $REPO_DIR
+	
+	git checkout -t origin master
+	git pull
+fi
+
+
+if [ -d "$LIB_DIR" ]; then
+	echo "Medac already linked."
+else
+	echo "Linking Medac library..."
+	ln -s $REPO_LIB_DIR $LIB_DIR
+	ln -s "${REPO_LIB_DIR}.pm" "${LIB_DIR}.pm"
+fi
+
+echo "Done."

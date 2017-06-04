@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+echo "Starting cproxy swarm!";
+docker-compose -f docker-compose.yml up -d;
+docker network connect dockersabnzbd_app cproxy-www;

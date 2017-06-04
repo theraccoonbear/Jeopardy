@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+cd /opt/src;
+if [ "$ENV" = "production" ]
+then
+	cpanm --notest -v -l /opt/src/modules --installdeps .;
+else
+	cpanm -v -l /opt/src/modules --installdeps .;
+fi

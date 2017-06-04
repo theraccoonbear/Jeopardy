@@ -1,0 +1,8 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Crypt::Bcrypt::Easy;
+
+my $password = 'password';
+my $encrypted = bcrypt->crypt($password);
+print "\n$encrypted\n";
