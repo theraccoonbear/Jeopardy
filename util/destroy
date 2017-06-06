@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-echo "Destroying cproxy swarm";
+echo "Destroying jeopardy swarm";
 docker-compose -f docker-compose.yml down;

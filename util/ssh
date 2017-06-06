@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker exec -it cproxy-www /bin/bash
+docker exec -it jeopardy-www /bin/bash

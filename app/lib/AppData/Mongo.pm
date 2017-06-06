@@ -29,8 +29,9 @@ has 'collection' => (
 );
 
 sub BUILD {
-	my $self = shift @_;
-	$self->setCollection('cproxy.' . $self->collection_name);
+	my ($self) = @_;
+	$self->setCollection('jeopardy.' . $self->collection_name);
+	return;
 }
 
 #my $result     = $collection->insert_one({ some => 'data' });
@@ -39,6 +40,7 @@ sub BUILD {
 sub setCollection {
 	my ($self, $collection) = @_;
 	$self->collection($self->client->ns($collection));
+	return;
 }
 
 sub insert {

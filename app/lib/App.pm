@@ -1,27 +1,30 @@
 package App;
 
+use strict;
+use warnings;
+
 use FindBin;
 use Cwd qw(abs_path);
 
 use lib abs_path("$FindBin::Bin/../../lib");
 use lib abs_path("$FindBin::Bin/../../modules/lib/perl5");
 
-#use lib abs_path("$FindBin::Bin/../../special/medac/medac/lib");
-
 use Dancer2;
+use Dancer2::Plugin::Auth::Tiny;
 use File::Slurp;
 use Data::Printer;
 use Data::Dumper;
 use YAML::XS;
 use File::Slurp;
 use Crypt::Bcrypt::Easy;
-use Medac::Downloader::Sabnzbd;
-use Medac::Search::NZB::Unified;
-use Medac::Search::NZB::OMGWTFNZBS;
-use Medac::Search::NZB::NZBPlanet;
+use Auth;
 use AppData::Mongo;
 
-my $mongo = new AppData::Mongo(collection_name => 'app');
+our $VERSION = 0.1;
+
+my $auth = Auth->new();
+
+my $mongo = AppData::Mongo->new(collection_name => 'app');
 
 
 sub loadYAML {
@@ -33,70 +36,54 @@ sub loadYAML {
 	return $yaml;
 }
 
-my $access_file = "$FindBin::Bin/../../config/access.yml";
-my $access = loadYAML($access_file);
-
-my $credentials_file = "$FindBin::Bin/../../config/credentials.yml";
-my $credentials = loadYAML($credentials_file);
-
-my $searcher = new Medac::Search::NZB::Unified();
-
-if (defined $credentials->{'omgwtfnzbs.me'}) {
-	print STDERR "Registering search provider: OMGWTFNZBs.me\n";
-	my $omg = new Medac::Search::NZB::OMGWTFNZBS($credentials->{'omgwtfnzbs.me'});
-	$searcher->addAgent($omg);
-}
-
-if (defined $credentials->{'nzbplanet.net'}) {
-	print STDERR "Registering search provider: NZBPlanet.net\n";
-	my $nzbplanet = new Medac::Search::NZB::NZBPlanet($credentials->{'nzbplanet.net'});
-	$searcher->addAgent($nzbplanet);
-}
-
-my $sab;
-if (defined $credentials->{'sabnzbd'}) {
-	print STDERR "Registering download provider: SABNZBd (${\$credentials->{sabnzbd}->{hostname}}:${\$credentials->{sabnzbd}->{port}})\n";
-	$sab = new Medac::Downloader::Sabnzbd($credentials->{'sabnzbd'});
-} else {
-	die "No SABNZBd available.  Bailing out.";
-}
-
-get '/' => sub {
-	template 'index', {
-		Fizz => 'Buzz'
-	};
+get q{/} => sub {
+	template 'index';
 };
 
-get '/search-movies' => sub {
-	template 'search', {};
+get '/login' => sub {
+	if (session 'username') {
+		say STDERR "already logged in as " . session 'username';
+		redirect q{/};
+	}
+	template 'login';
 };
 
-get '/search-movies/:term' => sub {
-	my $term = route_parameters->get('term');
-	my $idx = 0;
-	my $movies = [ map { $_->{'@idx'} = $idx++; $_; } @{ $searcher->searchMovies({terms => $term})}];
-	
-	template 'search', {
-		term => $term,
-		type => 'movies',
-		results => $movies,
-		searched => 1
-	};
-};
+post '/login' => sub {
+	my $params = request->body_parameters;
 
-post '/api/download' => sub {
-	my $url = body_parameters->get('url');
-	my $title = body_parameters->get('title');
-	
-	$sab->queueDownload($url, $title, 'cproxy');
-	
-	set 'layout' => 'json';
-	template 'json', {
-		data => {
-			success => 1
+	if ($params->{username} && $params->{password}) {
+		my $user = $auth->getUser($params->{username});
+		if ($user) {
+			if ($auth->validateCredentials($params->{username}, $params->{password})) {
+				say STDERR "$params->{username} authenticated";
+				session 'username' => $params->{username};
+				session 'user' => $user;
+				var 'username' => $params->{username};
+				redirect q{/};
+			}
+			say STDERR "$params->{username} failed authentication";
+		} else {
+			my $user = $auth->addUser({
+				username => $params->{username},
+				password => $params->{password}
+			});
+			say STDERR "$params->{username} not found. created account.";
+			session 'username' => $params->{username};
+			session 'user' => $user;
+			var 'username' => $params->{username};
+			redirect q{/};
 		}
+	}
+
+	template 'login', {
+
 	};
-	
+};
+
+get '/logout' => sub {
+	session 'username' => undef;
+	var 'username' => undef;
+	redirect '/login';
 };
 
 1;

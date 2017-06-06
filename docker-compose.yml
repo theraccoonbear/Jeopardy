@@ -1,15 +1,15 @@
 version: '2'
 services:
-  cproxy-www:
+  jeopardy-www:
     build: .
-    hostname: cproxy
+    hostname: jeopardy
     environment:
-      - DBNAME=cproxy
-      - DBUSER=cproxy
+      - DBNAME=jeopardy
+      - DBUSER=jeopardy
       - DBPASS=password
-      - DBHOST=cproxy-mongodb
+      - DBHOST=jeopardy-mongodb
       - DBPORT=27017
-    container_name: 'cproxy-www'
+    container_name: 'jeopardy-www'
     ports:
       - '5000:5000'
     volumes:
@@ -17,22 +17,22 @@ services:
     networks:
       - app
     links:
-      - 'cproxy-mongodb:cproxy-mongodb'
+      - 'jeopardy-mongodb:jeopardy-mongodb'
       #- 'sabnzbd:sabnzbd'
     entrypoint: /opt/src/util/run
     depends_on:
-      - cproxy-mongodb
+      - jeopardy-mongodb
 
-  cproxy-mongodb:
-    hostname: cproxy-monogodb
-    container_name: cproxy-mongodb
+  jeopardy-mongodb:
+    hostname: jeopardy-monogodb
+    container_name: jeopardy-mongodb
     image: mongo:latest
     networks:
       - app
     ports:
       - '27017:27017'
     volumes:
-      - cproxy-mongodb-storage:/data/mongo
+      - jeopardy-mongodb-storage:/data/mongo
   
   #sabnzbd:
   #  image: theraccoonbear/sabnzbd:latest
@@ -48,7 +48,7 @@ services:
   #    - app
 
 volumes:
-  cproxy-mongodb-storage: 
+  jeopardy-mongodb-storage: 
 
 networks:
   default:

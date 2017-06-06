@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-echo "Stopping cproxy swarm";
+echo "Stopping jeopardy swarm";
 docker-compose -f docker-compose.yml stop;

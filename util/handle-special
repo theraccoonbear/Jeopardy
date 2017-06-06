@@ -2,4 +2,3 @@
 
 cd /opt/src
 ./util/handle-text-handlebars
-./util/handle-medac
