@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use app;
+use App;
 use Test::More tests => 2;
 use Plack::Test;
 use HTTP::Request::Common;
