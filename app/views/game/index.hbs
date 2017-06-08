@@ -1,8 +1,25 @@
-<h1>Games</h1>
+<h1>Run Game</h1>
+<div class="row">
+	<div class="col-xs-12">
+		<a href="/game/random" class="btn btn-lg btn-success action-delete">Create Random</a>
+	</div>
+</div>
 <ul>
 	{{#each games}}
 	<li><a href="/game/run/{{_id}}" class="btn btn-primary btn-lg btn-block">{{name}}</a></li>
 	{{/each}}
+	<li>
+		<form method="post" action="/game/new">
+		<div class="row">
+			<div class="col-xs-6 col-md-10">
+				<input class="form-control" type="text" id="gameName" name="gameName" placeholder="New game name...">
+			</div>
+			<div class="col-xs-6 col-md-2">
+				<button type="submit" class="btn btn-success btn-md btn-block" id="newGame">Create New</a>
+			</div>
+		</div>
+		</form>
+	</li>
 </ul>
 
 	

@@ -10,17 +10,14 @@ use Data::Printer;
 use YAML::XS;
 use File::Slurp;
 use Crypt::Bcrypt::Easy;
-use AppData::Mongo;
+use AppData::DB;
 
-my $mongo = AppData::Mongo->new(collection_name => 'app');
-my $db = $mongo->client->get_database("jeopardy");
+my $mongo = AppData::DB->instance();
+my $db = $mongo->get_database("jeopardy");
 
 sub listUsers {
 	my ($self) = @_;
-	
 	my $users = $db->get_collection("users");
-	
-	#$users->insert({ name => "John Doe", age => 42 });
 	my $people = [$users->find()->all()];
 	return $people;
 }
@@ -42,10 +39,7 @@ sub validateCredentials {
 		say STDERR "User not found: $username";
 		return;
 	}
-	#p($user);
-	#p($user->{password});
-
-	return bcrypt->compare( text => $password, crypt => $user->{password} )
+	return bcrypt->compare(text => $password, crypt => $user->{password});
 }
 
 sub getUser {

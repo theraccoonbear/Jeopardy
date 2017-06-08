@@ -15,3 +15,29 @@ body {
 .btn .glyphicon {
 	font-size: 1.6em;
 }
+
+.jeopardy-board {
+	color: #fff;
+	background-color: #060CE9;
+}
+
+.jeopardy-board .block {
+	text-align: center;
+	vertical-align: middle;
+	border: 3px solid #060CE9;
+    height: 4vw;
+	text-shadow: -2px 2px 3px rgba(0, 0, 0, 1);
+}
+
+.jeopardy-board .block.selected {
+	border: 3px solid #000;
+}
+
+.jeopardy-board .category {
+	font-size: 20px;
+}
+
+.jeopardy-board .point {
+	font-size: 32px;
+	font-weight: bold;
+}

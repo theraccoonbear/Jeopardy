@@ -25,7 +25,7 @@ use Carp qw/croak/;
  
 our $VERSION = 0.01; # VERSION
 
-my $coder = JSON::XS->new->ascii->pretty->allow_nonref;
+my $coder = JSON::XS->new->ascii->pretty->allow_nonref->convert_blessed;
 
 # ABSTRACT: Text::Handlebars template engine wrapper for Dancer2
  

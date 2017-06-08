@@ -16,9 +16,9 @@ use File::Slurp;
 use Crypt::Bcrypt::Easy;
 use Digest::SHA qw(sha256_hex);
 
-use AppData::Mongo;
+use AppData::DB;
 
-my $mongo = new AppData::Mongo(collection_name => 'api');
+my $mongo = AppData::DB->instance();
 
 post '/download' => sub {
 	my $url = body_parameters->get('url');

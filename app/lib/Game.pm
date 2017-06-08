@@ -6,20 +6,28 @@ our $VERSION = 0.1;
 
 use Moose;
 use Auth;
-use File::Slurp;
 use Data::Printer;
-use YAML::XS;
-use File::Slurp;
-use Crypt::Bcrypt::Easy;
-use AppData::Mongo;
-use MongoDB;
+use AppData::DB;
 use MongoDB::OID;
 
 my $auth = Auth->new();
-my $mongo = AppData::Mongo->new(collection_name => 'app');
-my $db = $mongo->client->get_database("jeopardy");
+my $mongo = AppData::DB->instance();
+my $db = $mongo->get_database("jeopardy");
 
-sub listGames {
+sub _cond {
+	my ($self, $cond) = @_;
+	if (!$cond) {
+		$cond = {};
+	} elsif (!ref $cond) {
+		$cond = {_id => MongoDB::OID->new($cond)};
+	} elsif (ref $cond eq 'MongoDB::OID') {
+		$cond = {_id => $cond};
+	}
+
+	return $cond;
+}
+
+sub list {
 	my ($self) = @_;
 	
 	my $games_rs = $db->get_collection("games");
@@ -28,18 +36,52 @@ sub listGames {
 	return $games;
 }
 
-sub saveGame {
+sub add {
 	my ($self, $game) = @_;
+
+	$game->{categories} = $game->{categories} // [map { 
+		{
+			name => "Jeopardy! Category No. $_"
+		}
+		
+	} (1..6)];
+
+	$game->{answers} = $game->{answers} // [map {
+		my $outer_cnt = $_;
+		{points => [map {
+			my $value = $outer_cnt * 200;
+			{
+				value => $value,
+				answer => "\$$value Answer for Category $_.",
+				question => "\$$value Question for Category $_?"
+			}
+		} (1..6)]};
+	} (1..5)];
+	p($game);
 	my $games = $db->get_collection("games");
 
 	return $games->insert_one($game);
 }
 
-sub getGame {
-	my ($self, $id) = @_;
+sub save {
+	my ($self, $cond, $game) = @_;
+
+	my $games = $db->get_collection("games");
+	return $games->update_one($self->_cond($cond), {'$set' => $game});
+}
+
+sub get {
+	my ($self, $cond) = @_;
 	
 	my $coll = $db->get_collection("games");
-	return $coll->find_one({_id => MongoDB::OID->new(value => $id)});
+	return $coll->find_one($self->_cond($cond));
+}
+
+sub remove {
+	my ($self, $cond) = @_;
+
+	my $coll = $db->get_collection("games");
+	return $coll->delete_many($self->_cond($cond));
 }
 
 sub setColumnCategory {
@@ -47,10 +89,9 @@ sub setColumnCategory {
 
 	my $game = $self->getGame($game_id);
 
-	$game->{categories} = $game->{categories} // [map { "Category $_" } (1..6)];
 	$game->{categories}->[$pos - 1] = $label;
 
-	$self->saveGame($game);
+	$self->save($game_id, $game);
 
 	return $game;
 }

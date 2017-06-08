@@ -1,11 +1,44 @@
 <h1>{{game.name}}</h1>
+<div class="row">
+	<div class="col-xs-12">
+		<a href="/game/delete/{{game._id}}" class="btn btn-lg btn-danger action-delete">Delete</a>
+	</div>
+</div>
 
-<table>
-	<thead>
-		<tr>
-			{{#each game.categories}}
-			<th>x{{.}}x</th>
-			{{/each}}
-		</tr>
-	</thead>
-</table>
+<div class="jeopardy-board header row">
+	{{#each game.categories}}
+	<div class="category block col-md-2"><span>{{name}}</span></div>
+	{{/each}}
+</div>
+
+<div class="answer-grid">
+	{{#each game.answers}}
+	<div class="jeopardy-board row">
+		{{#each points}}
+		<div class="point block col-md-2"><span>${{value}}</span></div>
+		{{/each}}
+	</div>
+	{{/each}}
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<input type="text" id="answer" class="form-control" placeholder="Answer...">
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<input type="text" id="question" class="form-control" placeholder="Question...?">
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xs-12">
+		<button type="button" id="updateQuestion" class="form-control btn btn-primary">Save Question</button>
+	</div>
+</div>
+
+<script>
+	var game = {{{toJSON game}}};
+</script>

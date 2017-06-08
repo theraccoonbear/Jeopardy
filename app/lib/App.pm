@@ -9,35 +9,27 @@ use Cwd qw(abs_path);
 use lib abs_path("$FindBin::Bin/../../lib");
 use lib abs_path("$FindBin::Bin/../../modules/lib/perl5");
 
-use Dancer2;
-use Dancer2::Plugin::Auth::Tiny;
-use File::Slurp;
+use Dancer2 appname => 'jeopardy';
+use Dancer2::Plugin::Flash;
 use Data::Printer;
-use Data::Dumper;
-use YAML::XS;
-use File::Slurp;
-use Crypt::Bcrypt::Easy;
 use Auth;
-use AppData::Mongo;
-
 our $VERSION = 0.1;
 
 my $auth = Auth->new();
 
-my $mongo = AppData::Mongo->new(collection_name => 'app');
+prefix undef;
 
+hook before => sub {
+	var 'username' => session 'username';
 
-sub loadYAML {
-	my ($file) = @_;
-	
-	my $raw_yaml = read_file($file);
-	my $yaml = Load($raw_yaml);
-
-	return $yaml;
-}
+	if (!session('username') && request->path_info !~ m{^/login}xsm) {
+		flash(error => 'you must login first');
+		redirect '/login';
+	}
+};
 
 get q{/} => sub {
-	template 'index';
+	return template 'index';
 };
 
 get '/login' => sub {
@@ -45,7 +37,7 @@ get '/login' => sub {
 		say STDERR "already logged in as " . session 'username';
 		redirect q{/};
 	}
-	template 'login';
+	return template 'login';
 };
 
 post '/login' => sub {
@@ -61,15 +53,17 @@ post '/login' => sub {
 				var 'username' => $params->{username};
 				redirect q{/};
 			}
+			flash(error => 'invalid login');
 			say STDERR "$params->{username} failed authentication";
 		} else {
-			my $user = $auth->addUser({
+			my $newuser = $auth->addUser({
 				username => $params->{username},
 				password => $params->{password}
 			});
 			say STDERR "$params->{username} not found. created account.";
+			flash(success => 'new user created!');
 			session 'username' => $params->{username};
-			session 'user' => $user;
+			session 'user' => $newuser;
 			var 'username' => $params->{username};
 			redirect q{/};
 		}

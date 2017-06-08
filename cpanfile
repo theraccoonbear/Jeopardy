@@ -18,6 +18,7 @@ requires 'DateTime', '>= 0.01';
 requires 'Date::Parse', '>= 0.01';
 requires 'Dancer2', '>= 0.01';
 requires 'Dancer2::Session::MongoDB ', '>= 0.01';
+requires 'Dancer2::Plugin::Flash', '>= 0.01';
 requires 'Dancer2::Plugin::Auth::HTTP::Basic::DWIW', '>= 0.01';
 requires 'Dancer2::Plugin::Auth::Tiny', '>= 0.01';
 requires 'Crypt::Bcrypt::Easy', '>= 0.01';
