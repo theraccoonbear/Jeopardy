@@ -1,8 +1,0 @@
-/opt/src/modules/lib/perl5/Authen/SCRAM.pm
-/opt/src/modules/lib/perl5/Authen/SCRAM/Client.pm
-/opt/src/modules/lib/perl5/Authen/SCRAM/Role/Common.pm
-/opt/src/modules/lib/perl5/Authen/SCRAM/Server.pm
-/opt/src/modules/man/man3/Authen::SCRAM.0
-/opt/src/modules/man/man3/Authen::SCRAM::Client.0
-/opt/src/modules/man/man3/Authen::SCRAM::Role::Common.0
-/opt/src/modules/man/man3/Authen::SCRAM::Server.0

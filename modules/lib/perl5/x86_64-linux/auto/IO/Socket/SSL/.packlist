@@ -1,9 +1,0 @@
-/opt/src/modules/lib/perl5/IO/Socket/SSL.pm
-/opt/src/modules/lib/perl5/IO/Socket/SSL.pod
-/opt/src/modules/lib/perl5/IO/Socket/SSL/Intercept.pm
-/opt/src/modules/lib/perl5/IO/Socket/SSL/PublicSuffix.pm
-/opt/src/modules/lib/perl5/IO/Socket/SSL/Utils.pm
-/opt/src/modules/man/man3/IO::Socket::SSL.0
-/opt/src/modules/man/man3/IO::Socket::SSL::Intercept.0
-/opt/src/modules/man/man3/IO::Socket::SSL::PublicSuffix.0
-/opt/src/modules/man/man3/IO::Socket::SSL::Utils.0

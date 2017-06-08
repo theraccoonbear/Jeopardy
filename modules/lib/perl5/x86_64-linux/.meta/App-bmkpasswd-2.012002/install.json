@@ -1,1 +1,0 @@
-{"name":"App::bmkpasswd","pathname":"A/AV/AVENJ/App-bmkpasswd-2.012002.tar.gz","dist":"App-bmkpasswd-2.012002","target":"Crypt::Bcrypt::Easy","version":"2.012002","provides":{"Crypt::Bcrypt::Easy":{"file":"lib/Crypt/Bcrypt/Easy.pm","version":"2.012002"},"App::bmkpasswd":{"version":"2.012002","file":"lib/App/bmkpasswd.pm"}}}
