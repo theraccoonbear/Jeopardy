@@ -1,0 +1,16 @@
+/opt/src/modules/lib/perl5/Config/Any.pm
+/opt/src/modules/lib/perl5/Config/Any/Base.pm
+/opt/src/modules/lib/perl5/Config/Any/General.pm
+/opt/src/modules/lib/perl5/Config/Any/INI.pm
+/opt/src/modules/lib/perl5/Config/Any/JSON.pm
+/opt/src/modules/lib/perl5/Config/Any/Perl.pm
+/opt/src/modules/lib/perl5/Config/Any/XML.pm
+/opt/src/modules/lib/perl5/Config/Any/YAML.pm
+/opt/src/modules/man/man3/Config::Any.0
+/opt/src/modules/man/man3/Config::Any::Base.0
+/opt/src/modules/man/man3/Config::Any::General.0
+/opt/src/modules/man/man3/Config::Any::INI.0
+/opt/src/modules/man/man3/Config::Any::JSON.0
+/opt/src/modules/man/man3/Config::Any::Perl.0
+/opt/src/modules/man/man3/Config::Any::XML.0
+/opt/src/modules/man/man3/Config::Any::YAML.0

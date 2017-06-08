@@ -1,0 +1,10 @@
+/opt/src/modules/lib/perl5/JSON.pm
+/opt/src/modules/lib/perl5/JSON/backportPP.pm
+/opt/src/modules/lib/perl5/JSON/backportPP/Boolean.pm
+/opt/src/modules/lib/perl5/JSON/backportPP/Compat5005.pm
+/opt/src/modules/lib/perl5/JSON/backportPP/Compat5006.pm
+/opt/src/modules/man/man3/JSON.0
+/opt/src/modules/man/man3/JSON::backportPP.0
+/opt/src/modules/man/man3/JSON::backportPP::Boolean.0
+/opt/src/modules/man/man3/JSON::backportPP::Compat5005.0
+/opt/src/modules/man/man3/JSON::backportPP::Compat5006.0

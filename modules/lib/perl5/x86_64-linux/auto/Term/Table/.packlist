@@ -1,0 +1,13 @@
+/opt/src/modules/lib/perl5/Term/Table.pm
+/opt/src/modules/lib/perl5/Term/Table/Cell.pm
+/opt/src/modules/lib/perl5/Term/Table/CellStack.pm
+/opt/src/modules/lib/perl5/Term/Table/HashBase.pm
+/opt/src/modules/lib/perl5/Term/Table/LineBreak.pm
+/opt/src/modules/lib/perl5/Term/Table/Spacer.pm
+/opt/src/modules/lib/perl5/Term/Table/Util.pm
+/opt/src/modules/man/man3/Term::Table.0
+/opt/src/modules/man/man3/Term::Table::Cell.0
+/opt/src/modules/man/man3/Term::Table::CellStack.0
+/opt/src/modules/man/man3/Term::Table::HashBase.0
+/opt/src/modules/man/man3/Term::Table::LineBreak.0
+/opt/src/modules/man/man3/Term::Table::Util.0

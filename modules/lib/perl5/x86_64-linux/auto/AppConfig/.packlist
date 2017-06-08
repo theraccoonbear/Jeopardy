@@ -1,0 +1,14 @@
+/opt/src/modules/lib/perl5/AppConfig.pm
+/opt/src/modules/lib/perl5/AppConfig/Args.pm
+/opt/src/modules/lib/perl5/AppConfig/CGI.pm
+/opt/src/modules/lib/perl5/AppConfig/File.pm
+/opt/src/modules/lib/perl5/AppConfig/Getopt.pm
+/opt/src/modules/lib/perl5/AppConfig/State.pm
+/opt/src/modules/lib/perl5/AppConfig/Sys.pm
+/opt/src/modules/man/man3/AppConfig.0
+/opt/src/modules/man/man3/AppConfig::Args.0
+/opt/src/modules/man/man3/AppConfig::CGI.0
+/opt/src/modules/man/man3/AppConfig::File.0
+/opt/src/modules/man/man3/AppConfig::Getopt.0
+/opt/src/modules/man/man3/AppConfig::State.0
+/opt/src/modules/man/man3/AppConfig::Sys.0

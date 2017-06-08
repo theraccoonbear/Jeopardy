@@ -13,6 +13,8 @@ use Dancer2 appname => 'jeopardy';
 use Dancer2::Plugin::Flash;
 use Data::Printer;
 use Auth;
+use App::API;
+use App::Game;
 our $VERSION = 0.1;
 
 my $auth = Auth->new();
@@ -44,7 +46,7 @@ post '/login' => sub {
 	my $params = request->body_parameters;
 
 	if ($params->{username} && $params->{password}) {
-		my $user = $auth->getUser($params->{username});
+		my $user = $auth->get($params->{username});
 		if ($user) {
 			if ($auth->validateCredentials($params->{username}, $params->{password})) {
 				say STDERR "$params->{username} authenticated";
@@ -56,7 +58,7 @@ post '/login' => sub {
 			flash(error => 'invalid login');
 			say STDERR "$params->{username} failed authentication";
 		} else {
-			my $newuser = $auth->addUser({
+			my $newuser = $auth->add({
 				username => $params->{username},
 				password => $params->{password}
 			});

@@ -15,14 +15,14 @@ use AppData::DB;
 my $mongo = AppData::DB->instance();
 my $db = $mongo->get_database("jeopardy");
 
-sub listUsers {
+sub list {
 	my ($self) = @_;
 	my $users = $db->get_collection("users");
 	my $people = [$users->find()->all()];
 	return $people;
 }
 
-sub addUser {
+sub add {
 	my ($self, $user) = @_;
 	$user->{password} = bcrypt->crypt($user->{password});
 
@@ -34,7 +34,7 @@ sub addUser {
 sub validateCredentials {
 	my ($self, $username, $password) = @_;
 
-	my $user = $self->getUser($username);
+	my $user = $self->get($username);
 	if (!$user) {
 		say STDERR "User not found: $username";
 		return;
@@ -42,7 +42,7 @@ sub validateCredentials {
 	return bcrypt->compare(text => $password, crypt => $user->{password});
 }
 
-sub getUser {
+sub get {
 	my ($self, $username) = @_;
 	
 	my $users = $db->get_collection("users");

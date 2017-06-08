@@ -1,0 +1,12 @@
+/opt/src/modules/lib/perl5/DDP.pm
+/opt/src/modules/lib/perl5/Data/Printer.pm
+/opt/src/modules/lib/perl5/Data/Printer/Filter.pm
+/opt/src/modules/lib/perl5/Data/Printer/Filter/DB.pm
+/opt/src/modules/lib/perl5/Data/Printer/Filter/DateTime.pm
+/opt/src/modules/lib/perl5/Data/Printer/Filter/Digest.pm
+/opt/src/modules/man/man3/DDP.0
+/opt/src/modules/man/man3/Data::Printer.0
+/opt/src/modules/man/man3/Data::Printer::Filter.0
+/opt/src/modules/man/man3/Data::Printer::Filter::DB.0
+/opt/src/modules/man/man3/Data::Printer::Filter::DateTime.0
+/opt/src/modules/man/man3/Data::Printer::Filter::Digest.0

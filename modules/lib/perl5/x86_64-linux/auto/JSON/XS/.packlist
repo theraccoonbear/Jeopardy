@@ -1,0 +1,7 @@
+/opt/src/modules/bin/json_xs
+/opt/src/modules/lib/perl5/x86_64-linux/JSON/XS.pm
+/opt/src/modules/lib/perl5/x86_64-linux/JSON/XS/Boolean.pm
+/opt/src/modules/lib/perl5/x86_64-linux/auto/JSON/XS/XS.so
+/opt/src/modules/man/man1/json_xs.0
+/opt/src/modules/man/man3/JSON::XS.0
+/opt/src/modules/man/man3/JSON::XS::Boolean.0

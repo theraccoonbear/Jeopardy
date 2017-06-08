@@ -1,0 +1,7 @@
+/opt/src/modules/bin/cpanel_json_xs
+/opt/src/modules/lib/perl5/x86_64-linux/Cpanel/JSON/XS.pm
+/opt/src/modules/lib/perl5/x86_64-linux/Cpanel/JSON/XS/Boolean.pm
+/opt/src/modules/lib/perl5/x86_64-linux/auto/Cpanel/JSON/XS/XS.so
+/opt/src/modules/man/man1/cpanel_json_xs.0
+/opt/src/modules/man/man3/Cpanel::JSON::XS.0
+/opt/src/modules/man/man3/Cpanel::JSON::XS::Boolean.0

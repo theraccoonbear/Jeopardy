@@ -1,0 +1,16 @@
+/opt/src/modules/lib/perl5/XML/XPathEngine.pm
+/opt/src/modules/lib/perl5/XML/XPathEngine/Boolean.pm
+/opt/src/modules/lib/perl5/XML/XPathEngine/Expr.pm
+/opt/src/modules/lib/perl5/XML/XPathEngine/Function.pm
+/opt/src/modules/lib/perl5/XML/XPathEngine/Literal.pm
+/opt/src/modules/lib/perl5/XML/XPathEngine/LocationPath.pm
+/opt/src/modules/lib/perl5/XML/XPathEngine/NodeSet.pm
+/opt/src/modules/lib/perl5/XML/XPathEngine/Number.pm
+/opt/src/modules/lib/perl5/XML/XPathEngine/Root.pm
+/opt/src/modules/lib/perl5/XML/XPathEngine/Step.pm
+/opt/src/modules/lib/perl5/XML/XPathEngine/Variable.pm
+/opt/src/modules/man/man3/XML::XPathEngine.0
+/opt/src/modules/man/man3/XML::XPathEngine::Boolean.0
+/opt/src/modules/man/man3/XML::XPathEngine::Literal.0
+/opt/src/modules/man/man3/XML::XPathEngine::NodeSet.0
+/opt/src/modules/man/man3/XML::XPathEngine::Number.0

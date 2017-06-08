@@ -1,0 +1,5 @@
+/opt/src/modules/lib/perl5/Stream/Buffered.pm
+/opt/src/modules/lib/perl5/Stream/Buffered/Auto.pm
+/opt/src/modules/lib/perl5/Stream/Buffered/File.pm
+/opt/src/modules/lib/perl5/Stream/Buffered/PerlIO.pm
+/opt/src/modules/man/man3/Stream::Buffered.0

@@ -1,0 +1,16 @@
+/opt/src/modules/lib/perl5/Test/File/ShareDir.pm
+/opt/src/modules/lib/perl5/Test/File/ShareDir/Dist.pm
+/opt/src/modules/lib/perl5/Test/File/ShareDir/Module.pm
+/opt/src/modules/lib/perl5/Test/File/ShareDir/Object/Dist.pm
+/opt/src/modules/lib/perl5/Test/File/ShareDir/Object/Inc.pm
+/opt/src/modules/lib/perl5/Test/File/ShareDir/Object/Module.pm
+/opt/src/modules/lib/perl5/Test/File/ShareDir/TempDirObject.pm
+/opt/src/modules/lib/perl5/Test/File/ShareDir/Utils.pm
+/opt/src/modules/man/man3/Test::File::ShareDir.0
+/opt/src/modules/man/man3/Test::File::ShareDir::Dist.0
+/opt/src/modules/man/man3/Test::File::ShareDir::Module.0
+/opt/src/modules/man/man3/Test::File::ShareDir::Object::Dist.0
+/opt/src/modules/man/man3/Test::File::ShareDir::Object::Inc.0
+/opt/src/modules/man/man3/Test::File::ShareDir::Object::Module.0
+/opt/src/modules/man/man3/Test::File::ShareDir::TempDirObject.0
+/opt/src/modules/man/man3/Test::File::ShareDir::Utils.0

@@ -1,0 +1,6 @@
+/opt/src/modules/bin/bmkpasswd
+/opt/src/modules/lib/perl5/App/bmkpasswd.pm
+/opt/src/modules/lib/perl5/Crypt/Bcrypt/Easy.pm
+/opt/src/modules/man/man1/bmkpasswd.0
+/opt/src/modules/man/man3/App::bmkpasswd.0
+/opt/src/modules/man/man3/Crypt::Bcrypt::Easy.0

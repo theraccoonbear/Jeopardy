@@ -1,0 +1,12 @@
+/opt/src/modules/lib/perl5/IPC/Run3.pm
+/opt/src/modules/lib/perl5/IPC/Run3/ProfArrayBuffer.pm
+/opt/src/modules/lib/perl5/IPC/Run3/ProfLogReader.pm
+/opt/src/modules/lib/perl5/IPC/Run3/ProfLogger.pm
+/opt/src/modules/lib/perl5/IPC/Run3/ProfPP.pm
+/opt/src/modules/lib/perl5/IPC/Run3/ProfReporter.pm
+/opt/src/modules/man/man3/IPC::Run3.0
+/opt/src/modules/man/man3/IPC::Run3::ProfArrayBuffer.0
+/opt/src/modules/man/man3/IPC::Run3::ProfLogReader.0
+/opt/src/modules/man/man3/IPC::Run3::ProfLogger.0
+/opt/src/modules/man/man3/IPC::Run3::ProfPP.0
+/opt/src/modules/man/man3/IPC::Run3::ProfReporter.0

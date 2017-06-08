@@ -1,0 +1,4 @@
+/opt/src/modules/bin/test-yaml
+/opt/src/modules/lib/perl5/Test/YAML.pm
+/opt/src/modules/lib/perl5/Test/YAML.pod
+/opt/src/modules/man/man3/Test::YAML.0

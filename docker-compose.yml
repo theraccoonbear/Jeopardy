@@ -18,7 +18,6 @@ services:
       - app
     links:
       - 'jeopardy-mongodb:jeopardy-mongodb'
-      #- 'sabnzbd:sabnzbd'
     entrypoint: /opt/src/util/run
     depends_on:
       - jeopardy-mongodb
@@ -33,19 +32,6 @@ services:
       - '27017:27017'
     volumes:
       - jeopardy-mongodb-storage:/data/mongo
-  
-  #sabnzbd:
-  #  image: theraccoonbear/sabnzbd:latest
-  #  container_name: sabnzbd
-  #  ports:
-  #    - '9090:9090'
-  #    #- '8080:8080'
-  #  volumes:
-  #    - './src:/opt/src'
-  #    #- '.:/opt/src'
-  #   
-  #  networks:
-  #    - app
 
 volumes:
   jeopardy-mongodb-storage: 

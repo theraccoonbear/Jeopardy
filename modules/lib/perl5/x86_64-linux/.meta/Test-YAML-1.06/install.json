@@ -1,0 +1,1 @@
+{"name":"Test::YAML","pathname":"I/IN/INGY/Test-YAML-1.06.tar.gz","target":"Test::YAML","version":"1.06","provides":{"Test::YAML::Filter":{"file":"lib/Test/YAML.pm","version":"1.06"},"Test::YAML":{"version":"1.06","file":"lib/Test/YAML.pm"}},"dist":"Test-YAML-1.06"}
