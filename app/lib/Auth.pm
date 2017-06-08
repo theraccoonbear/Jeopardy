@@ -14,10 +14,10 @@ use AppData::DB;
 
 my $mongo = AppData::DB->instance();
 my $db = $mongo->get_database("jeopardy");
+my $users = $db->get_collection("users");
 
 sub list {
 	my ($self) = @_;
-	my $users = $db->get_collection("users");
 	my $people = [$users->find()->all()];
 	return $people;
 }
@@ -25,9 +25,6 @@ sub list {
 sub add {
 	my ($self, $user) = @_;
 	$user->{password} = bcrypt->crypt($user->{password});
-
-	my $users = $db->get_collection("users");
-
 	return $users->insert_one($user);
 }
 
@@ -45,7 +42,6 @@ sub validateCredentials {
 sub get {
 	my ($self, $username) = @_;
 	
-	my $users = $db->get_collection("users");
 	my $user = [$users->find({username => $username})->all()];
 
 	return $user ? $user->[0] : undef;
