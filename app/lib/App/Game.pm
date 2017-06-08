@@ -115,7 +115,7 @@ post '/update/:game_id' => sub {
 		my $answer = $params->{answer} || '[ ANSWER ]';
 		my $question = $params->{question} || '[ QUESTION ]';
 		
-		$games->save($game->{_id}, {"answers.$col.points.$row" => {answer => $answer, question => $question, value => $row + 1 * 200}});
+		$games->save($game->{_id}, {"answers.$row.points.$col" => {answer => $answer, question => $question, value => ($row + 1) * 200}});
 		return 1;
 	}
 	return 0;
