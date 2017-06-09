@@ -13,17 +13,15 @@ use Dancer2 appname => 'jeopardy';
 use Dancer2::Plugin::Flash;
 use Data::Printer;
 use Game;
+use Data;
 
 my $games = Game->new();
+my $data = Data->new();
 
 prefix '/game';
 
 get '/join/game_id?' => sub {
-    my $count = session("counter");
-    session "counter" => ++$count;
-
 	template 'game/join', {
-		count => $count
 	};
 };
 
@@ -100,6 +98,34 @@ get '/delete/:game_id' => sub {
 	
 	redirect '/game/run/';
 };
+
+get '/import' => sub {
+	my $files = $data->listJSON();
+
+	return template 'game/import', {
+		files => $files
+	};
+};
+
+post '/import' => sub {
+	my $params = request->body_parameters;
+	my $file = $params->{file} || '';
+
+	say STDERR "FILE: $file";
+
+	my $files = $data->listJSON();
+	if (scalar grep { /$file/xsm } @{$files}) {
+		my $loaded_data = $data->loadJSON($file);
+		$loaded_data->{owner} = session('username');
+		my $game = $games->add($loaded_data);
+		redirect '/game/run/' . $game->inserted_id;
+	}
+
+	return template 'game/import', {
+		files => $files
+	};
+};
+
 
 prefix '/api/game';
 

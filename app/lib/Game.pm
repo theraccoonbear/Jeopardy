@@ -9,6 +9,7 @@ use Auth;
 use Data::Printer;
 use AppData::DB;
 use MongoDB::OID;
+use Cwd qw(abs_path);
 
 my $auth = Auth->new();
 my $mongo = AppData::DB->instance();

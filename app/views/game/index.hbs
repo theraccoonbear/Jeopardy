@@ -1,10 +1,13 @@
 <h1>Run Game</h1>
 <div class="row">
-	<div class="col-xs-12">
-		<a href="/game/random" class="btn btn-lg btn-success action-delete">Create Random</a>
+	<div class="col-md-6">
+		<a href="/game/random" class="btn btn-lg btn-success btn-block action-delete">Create Random</a>
+	</div>
+	<div class="col-md-6">
+		<a href="/game/import" class="btn btn-lg btn-primary btn-block action-import">Import JSON</a>
 	</div>
 </div>
-<ul>
+<ul class="list-unstyled">
 	{{#each games}}
 	<li><a href="/game/run/{{_id}}" class="btn btn-primary btn-lg btn-block">{{name}}</a></li>
 	{{/each}}
