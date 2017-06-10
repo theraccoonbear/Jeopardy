@@ -15,6 +15,7 @@ use Data::Printer;
 use Auth;
 use App::API;
 use App::Game;
+use App::Activity;
 our $VERSION = 0.1;
 
 my $auth = Auth->new();

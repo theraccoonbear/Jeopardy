@@ -9,7 +9,7 @@
 </div>
 <ul class="list-unstyled">
 	{{#each games}}
-	<li><a href="/game/run/{{_id}}" class="btn btn-primary btn-lg btn-block">{{name}}</a></li>
+	<li><a href="/game/run/{{_id}}" class="btn btn-primary">Run</a> {{name}} <a href="/activity/from/{{_id}}" class="btn btn-danger">Create</a></li>
 	{{/each}}
 	<li>
 		<form method="post" action="/game/new">

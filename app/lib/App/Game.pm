@@ -35,7 +35,7 @@ get '/run/:game_id?' => sub {
 
 	if ($game) {
 		$games->save($game->{_id}, {'x' => 'y'});
-
+		var 'game' => $game;
 		return template 'game/run', {
 			game => $game
 		};
