@@ -1,7 +1,6 @@
-package AppData::DB;
+package App::DB;
 use strict;
 use warnings;
-use lib '../../../modules/lib/perl5';
 use MongoDB;
 
 our $VERSION = 0.1;
@@ -17,7 +16,8 @@ my $count = 0;
 
 sub instance {
 	$count++;
-	say STDERR "$count MongoDB handle retrievals";
+	my ($package, $filename, $line) = caller;
+	say STDERR "($count) MongoDB handle instance given to $package";
 	return $client;
 }
 

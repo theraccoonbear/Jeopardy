@@ -1,4 +1,4 @@
-package App;
+package App::Route;
 
 use strict;
 use warnings;
@@ -6,19 +6,15 @@ use warnings;
 use FindBin;
 use Cwd qw(abs_path);
 
-use lib abs_path("$FindBin::Bin/../../lib");
-use lib abs_path("$FindBin::Bin/../../modules/lib/perl5");
-
 use Dancer2 appname => 'jeopardy';
 use Dancer2::Plugin::Flash;
 use Data::Printer;
-use Auth;
-use App::API;
-use App::Game;
-use App::Activity;
+use App::Auth;
+use App::Route::Game;
+use App::Route::Activity;
 our $VERSION = 0.1;
 
-my $auth = Auth->new();
+my $auth = App::Auth->new();
 
 prefix undef;
 
@@ -81,6 +77,11 @@ get '/logout' => sub {
 	session 'username' => undef;
 	var 'username' => undef;
 	redirect '/login';
+};
+
+any qr{.*} => sub {
+    status 'not_found';
+    template 'err/404', { path => request->path };
 };
 
 1;

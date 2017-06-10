@@ -1,22 +1,17 @@
-package App::Game;
+package App::Route::Game;
 use strict;
 use warnings;
 our $VERSION = 0.1;
 
 use FindBin;
-use Cwd qw(abs_path);
-
-use lib abs_path("$FindBin::Bin/../../../lib");
-use lib abs_path("$FindBin::Bin/../../../modules/lib/perl5");
-
 use Dancer2 appname => 'jeopardy';
 use Dancer2::Plugin::Flash;
 use Data::Printer;
-use Game;
-use Data;
+use App::Model::Game;
+use App::Data;
 
-my $games = Game->new();
-my $data = Data->new();
+my $games = App::Model::Game->new();
+my $data = App::Data->new();
 
 prefix '/game';
 

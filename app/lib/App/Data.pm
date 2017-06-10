@@ -1,4 +1,4 @@
-package Data;
+package App::Data;
 use strict;
 use warnings;
 

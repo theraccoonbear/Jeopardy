@@ -9,7 +9,11 @@
 </div>
 <ul class="list-unstyled">
 	{{#each games}}
-	<li><a href="/game/run/{{_id}}" class="btn btn-primary">Run</a> {{name}} <a href="/activity/from/{{_id}}" class="btn btn-danger">Create</a></li>
+	<li>
+		<strong>{{name}}</strong> (<em>{{owner}}</em>)<br>
+		<a href="/game/run/{{_id}}" class="btn btn-warning"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+		<a href="/activity/from/{{_id}}" class="btn btn-success"><span class="glyphicon glyphicon-upload"></span> Host</a>
+		<a href="/game/delete/{{_id}}" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a></li>
 	{{/each}}
 	<li>
 		<form method="post" action="/game/new">

@@ -117,6 +117,11 @@ sub render {
  
     return $content;
 }
- 
+
+sub error {
+  p(@_);
+  return;
+}
+
 1;
 __END__

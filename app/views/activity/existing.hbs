@@ -1,0 +1,10 @@
+<h1>Existing games</h1>
+<p>Looks like you're already running this game.  Pick from the list below or choose "New Game"</p>
+
+<ul class="list-unstyled">
+	{{#each existing}}
+	<li>{{game.name}} {{#each players}}|{{/each}} <a href="/activity/run/{{_id}}" class="btn btn-primary">Resume</a></li>
+	{{/each}}
+	<li>No, none of these <a href="/activity/from/{{game._id}}?new=1" class="btn btn-success">Create New</a></li>
+</ul>
+

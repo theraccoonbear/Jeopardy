@@ -1,18 +1,18 @@
-package Auth;
+package App::Auth;
 use strict;
 use warnings;
 
 our $VERSION = 0.1;
 
-use Moose;
+use Moo;
 use File::Slurp;
 use Data::Printer;
 use YAML::XS;
 use File::Slurp;
 use Crypt::Bcrypt::Easy;
-use AppData::DB;
+use App::DB;
 
-my $mongo = AppData::DB->instance();
+my $mongo = App::DB->instance();
 my $db = $mongo->get_database("jeopardy");
 my $users = $db->get_collection("users");
 

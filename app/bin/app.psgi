@@ -7,10 +7,9 @@ use lib "$FindBin::Bin/../modules/lib/perl5";
 
 our $VERSION = 0.1;
 
-#use Dancer2;
-use App;
+use App::Route;
 use Plack::Builder;
 
 builder {
-	mount q{/} => App->to_app;
+	mount q{/} => App::Route->to_app;
 };

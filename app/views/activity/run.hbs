@@ -1,0 +1,20 @@
+<h1>RUN</h1>
+*{{activity.game.name}}*
+
+{{#with activity}}
+<div class="jeopardy-board header row">
+	{{#each game.categories}}
+	<div class="category block col-md-2"><span>{{name}}</span></div>
+	{{/each}}
+</div>
+
+<div class="answer-grid">
+	{{#each game.answers}}
+	<div class="jeopardy-board row">
+		{{#each points}}
+		<div class="point block col-md-2"><span>${{value}}</span></div>
+		{{/each}}
+	</div>
+	{{/each}}
+</div>
+{{/with}}
