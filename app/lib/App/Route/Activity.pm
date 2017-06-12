@@ -37,15 +37,15 @@ get '/from/:game_id' => sub {
 	}
 
 	if (!request->parameters->{new}) {
-			my $existing_activities = [map {
-				$_->{game} = $games->get($_->{game_id});
-				$_
-			} @{
-				$activities->find({
-					game_id => $activities->oid($game_id),
-					runner_id => $activities->oid(session('user')->{_id})
-				})
-			}];
+		my $existing_activities = [map {
+			$_->{game} = $games->get($_->{game_id});
+			$_
+		} @{
+			$activities->find({
+				game_id => $activities->oid($game_id),
+				runner_id => $activities->oid(session('user')->{_id})
+			})
+		}];
 
 		if (scalar @{$existing_activities}) {
 			return template 'activity/existing',{
