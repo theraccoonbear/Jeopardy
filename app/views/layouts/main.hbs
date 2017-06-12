@@ -32,9 +32,12 @@
 						<span class="icon-bar"></span> <span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="{{#if vars.username}}/game/run/{{else}}/login{{/if}}">Jeopardy!</a>
+					<a class="navbar-brand" href="{{#if vars.username}}/{{else}}/login{{/if}}">Jeopardy!</a>
 					{{#if vars.game}}
 					<span class="navbar-brand">: "{{vars.game.name}}"</span>
+					{{/if}}
+					{{#if vars.activity}}
+					<span class="navbar-brand">: "{{vars.activity.game.name}}"</span>
 					{{/if}}
 				</div>
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-6">

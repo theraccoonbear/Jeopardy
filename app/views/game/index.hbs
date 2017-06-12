@@ -11,7 +11,7 @@
 	{{#each games}}
 	<li>
 		<strong>{{name}}</strong> (<em>{{owner}}</em>)<br>
-		<a href="/game/run/{{_id}}" class="btn btn-warning"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+		<a href="/game/edit/{{_id}}" class="btn btn-warning"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
 		<a href="/activity/from/{{_id}}" class="btn btn-success"><span class="glyphicon glyphicon-upload"></span> Host</a>
 		<a href="/game/delete/{{_id}}" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a></li>
 	{{/each}}

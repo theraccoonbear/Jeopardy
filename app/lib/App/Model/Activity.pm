@@ -8,109 +8,24 @@ use Moo;
 
 extends 'App::Model';
 
-use App::Auth;
 use Data::Printer;
-use App::DB;
-use MongoDB::OID;
-use Cwd qw(abs_path);
-
-# my $auth = App::Auth->new();
-# my $mongo = App::DB->instance();
-# my $db = $mongo->get_database("jeopardy");
+use App::Model::User;
+use App::Model::Game;
 
 has '+model_name' => (default => 'activity');
 
-# sub _cond {
-# 	my ($self, $cond) = @_;
-# 	if (!$cond) {
-# 		$cond = {};
-# 	} elsif (!ref $cond) {
-# 		$cond = {_id => MongoDB::OID->new($cond)};
-# 	} elsif (ref $cond eq 'MongoDB::OID') {
-# 		$cond = {_id => $cond};
-# 	}
+my $users = App::Model::User->new();
+my $games = App::Model::Game->new();
 
-# 	return $cond;
-# }
 
-# sub list {
-# 	my ($self) = @_;
-	
-# 	my $games_rs = $db->get_collection("games");
-	
-# 	my $games = [$games_rs->find()->all()];
-# 	return $games;
-# }
+sub load_related {
+	my ($self, $user) = @_;
 
-# sub add {
-# 	my ($self, $game) = @_;
+	$user->{game} = $games->get($user->{game_id});
+	$user->{player_count} = scalar @{$user->{players}};
+	$user->{runner} = $users->get($user->{runner_id});
+	return $user;
+}
 
-# 	$game->{categories} = $game->{categories} // [map { 
-# 		{
-# 			name => "Jeopardy! Category No. $_"
-# 		}
-		
-# 	} (1..6)];
-
-# 	$game->{answers} = $game->{answers} // [map {
-# 		my $outer_cnt = $_;
-# 		{points => [map {
-# 			my $value = $outer_cnt * 200;
-# 			{
-# 				value => $value,
-# 				answer => "\$$value Answer for Category $_.",
-# 				question => "\$$value Question for Category $_?"
-# 			}
-# 		} (1..6)]};
-# 	} (1..5)];
-# 	#p($game);
-# 	my $coll = $self->collection();
-
-# 	return $coll->insert_one($game);
-# }
-
-# sub save {
-# 	my ($self, $cond, $game) = @_;
-
-# 	my $games = $db->get_collection("games");
-# 	return $games->update_one($self->_cond($cond), {'$set' => $game});
-# }
-
-# sub get {
-# 	my ($self, $cond) = @_;
-	
-# 	my $coll = $db->get_collection("games");
-# 	return $coll->find_one($self->_cond($cond));
-# }
-
-# sub remove {
-# 	my ($self, $cond) = @_;
-
-# 	my $coll = $self->get_collection("games");
-# 	return $coll->delete_many($self->_cond($cond));
-# }
-
-# sub setColumnCategory {
-# 	my ($self, $game_id, $pos, $label) = @_;
-
-# 	my $game = $self->getGame($game_id);
-
-# 	$game->{categories}->[$pos - 1] = $label;
-
-# 	$self->save($game_id, $game);
-
-# 	return $game;
-# }
-
-# sub joinGame {
-# 	my ($self, $username, $game_id) = @_;
-
-# 	my $user = $self->getUser($username);
-# 	if (!$user) {
-# 		say STDERR "User not found: $username";
-# 		return;
-# 	}
-# 	return;
-# }
 
 1;

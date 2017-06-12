@@ -119,7 +119,8 @@ sub render {
 }
 
 sub error {
-  p(@_);
+  my (@p) = @_;
+  p(@p);
   return;
 }
 

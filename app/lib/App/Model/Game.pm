@@ -8,11 +8,11 @@ use Moo;
 
 extends 'App::Model';
 
-use App::Auth;
+#use App::Auth;
 use Data::Printer;
-use App::DB;
-use MongoDB::OID;
-use Cwd qw(abs_path);
+#use App::DB;
+#use MongoDB::OID;
+#use Cwd qw(abs_path);
 
 has '+model_name' => (default => 'games');
 
@@ -41,6 +41,11 @@ has '+model_name' => (default => 'games');
 # 	my $games = [$games_rs->find()->all()];
 # 	return $games;
 # }
+
+sub load_related {
+	my ($self, $game) = @_;
+
+}
 
 sub add {
 	my ($self, $game) = @_;

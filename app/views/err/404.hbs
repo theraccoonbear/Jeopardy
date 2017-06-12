@@ -1,4 +1,13 @@
-<h1>Crap</h1>
+<h1>Aww, Crap</h1>
 <h4>404 - Not Found</h4>
 <p>Something went wrong.  I dunno how you got here, but there's nothing to see.</p>
+{{#if model}}
+<p>
+	If I had to guess, it looks like you might be trying to do something with an <strong>{{model}}</strong>.
+	{{#if action}}
+		Possibly you were trying to <strong>{{action}}</strong> one{{#if id}} with an id of <strong>{{id}}</strong>{{/if}}.
+	{{/if}}
+</p>
+{{/if}}
+	
 

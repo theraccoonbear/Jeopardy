@@ -23,7 +23,7 @@ else
 fi
 
 
-if [ -d "$LIB_DIR" ]; then
+if [ -h "$LIB_DIR" ]; then
 	echo "Text::Handlebars library already linked."
 else
 	echo "Linking Text::Handlebars library..."

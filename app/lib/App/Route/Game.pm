@@ -20,22 +20,7 @@ get '/join/game_id?' => sub {
 	};
 };
 
-get '/run/:game_id?' => sub {
-	my $game_id = route_parameters->get('game_id') ;
-	my $game;
-
-	if ($game_id) {
-		$game = $games->get($game_id);
-	}
-
-	if ($game) {
-		$games->save($game->{_id}, {'x' => 'y'});
-		var 'game' => $game;
-		return template 'game/run', {
-			game => $game
-		};
-	}
-
+get '/' => sub {
 	my $all_games = $games->list();
 
 	if (! scalar @{$all_games}) {
@@ -50,13 +35,31 @@ get '/run/:game_id?' => sub {
 	};
 };
 
+get '/edit/:game_id?' => sub {
+	my $game_id = route_parameters->get('game_id') ;
+	my $game;
+
+	if ($game_id) {
+		$game = $games->get($game_id);
+	}
+
+	if (!$game) {
+		return redirect '/game/';
+	}
+
+	var 'game' => $game;
+	return template 'game/run', {
+		game => $game
+	};
+};
+
 get '/random' => sub {
 	my $game = $games->add({
 		name => "Fun New Game #" . (int(rand() * 10_000)),
 		owner => session('username')
 	});
 
-	redirect '/game/run/' . $game->inserted_id;
+	redirect '/game/edit/' . $game->inserted_id;
 };
 
 post '/new' => sub {
@@ -72,7 +75,7 @@ post '/new' => sub {
 		flash(success => 'game created');
 	}
 
-	redirect '/game/run/';
+	redirect '/game/';
 };
 
 get '/delete/:game_id' => sub {
@@ -91,7 +94,7 @@ get '/delete/:game_id' => sub {
 	}
 
 	
-	redirect '/game/run/';
+	redirect '/game/';
 };
 
 get '/import' => sub {
@@ -113,7 +116,7 @@ post '/import' => sub {
 		my $loaded_data = $data->loadJSON($file);
 		$loaded_data->{owner} = session('username');
 		my $game = $games->add($loaded_data);
-		redirect '/game/run/' . $game->inserted_id;
+		redirect '/game/edit/' . $game->inserted_id;
 	}
 
 	return template 'game/import', {
