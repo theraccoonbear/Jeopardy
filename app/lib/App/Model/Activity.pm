@@ -22,7 +22,7 @@ sub load_related {
 	my ($self, $user) = @_;
 
 	$user->{game} = $games->get($user->{game_id});
-	$user->{player_count} = scalar @{$user->{players}};
+	$user->{player_count} = $user->{players} ? scalar @{$user->{players}} : 0;
 	$user->{runner} = $users->get($user->{runner_id});
 	return $user;
 }
