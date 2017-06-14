@@ -113,12 +113,12 @@ get '/join/:activity_id' => sub {
 
 	my $cnt = scalar grep {
 		$_->{username} eq session 'username';
-	} @{$activity->{players}};
+	} @{$activity->{state}->{players}};
 
 	say STDERR "COUNT: $cnt";
 
 	if (!$cnt) {
-		push @{$activity->{players}}, {
+		push @{$activity->{state}->{players}}, {
 			username => session('username'),
 			score => 0
 		};
@@ -138,7 +138,7 @@ get '/play/:activity_id' => sub {
 
 	my $cnt = scalar grep {
 		$_->{username} eq session 'username';
-	} @{$activity->{players}};
+	} @{$activity->{state}->{players}};
 
 	say STDERR "COUNT: $cnt";
 

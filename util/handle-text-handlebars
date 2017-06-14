@@ -17,8 +17,8 @@ else
 	git clone https://github.com/theraccoonbear/text-handlebars.git $REPO_DIR
 	
 	cd $REPO_DIR
-	
-	git checkout -t origin issue-9
+	git fetch
+	git checkout issue-9
 	git pull
 fi
 

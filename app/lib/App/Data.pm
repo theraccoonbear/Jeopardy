@@ -23,9 +23,7 @@ sub listJSON {
 sub loadJSON {
 	my ($self, $file) = @_;
 	if ($file =~ m/\.\./xsm) { return; }
-	p($file);
 	my $data_path = abs_path("$FindBin::Bin/../../data/$file");
-	p($data_path);
 	return decode_json(read_file($data_path));
 }
 

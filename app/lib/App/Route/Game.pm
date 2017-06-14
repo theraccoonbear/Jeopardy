@@ -9,9 +9,11 @@ use Dancer2::Plugin::Flash;
 use Data::Printer;
 use App::Model::Game;
 use App::Data;
+use App::Component::JArchive;
 
 my $games = App::Model::Game->new();
 my $data = App::Data->new();
+my $jarchive = App::Component::JArchive->new();
 
 prefix '/game';
 
@@ -107,7 +109,7 @@ get '/import' => sub {
 
 post '/import' => sub {
 	my $params = request->body_parameters;
-	my $file = $params->{file} || '';
+	my $file = $params->{file} || q{};
 
 	say STDERR "FILE: $file";
 
@@ -121,6 +123,24 @@ post '/import' => sub {
 
 	return template 'game/import', {
 		files => $files
+	};
+};
+
+get '/j-archive/:season_id?' => sub {
+	my $season_num = route_parameters->get('season_id') ;
+
+	if ($season_num) {
+		my $season = $jarchive->getSeason($season_num);
+		return template 'game/jarchive-season', {
+			episodes => $season->{episodes},
+			season_num => $season_num
+		};
+	}
+
+	my $seasons = $jarchive->listSeasons();
+
+	return template 'game/jarchive-index', {
+		seasons => $seasons
 	};
 };
 
