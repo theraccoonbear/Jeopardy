@@ -22,6 +22,10 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 	
 	<script type="text/javascript" src="[% request.uri_base  %]/javascripts/main.js"></script>
+	<script type="text/javascript" src="[% request.uri_base  %]/javascripts/websocket.js"></script>
+	[% FOREACH script IN vars.extra_scripts %]
+	<script type="text/javascript" src="[% request.uri_base  %]/javascripts/[% script %]"></script>
+	[% END %]
 	</head>
 	<body>
 		<nav class="navbar navbar-default navbar-fixed-top">

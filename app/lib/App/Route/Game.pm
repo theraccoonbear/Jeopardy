@@ -17,12 +17,16 @@ my $jarchive = App::Component::JArchive->new();
 
 prefix '/game';
 
+hook before => sub {
+	var 'extra_scripts' => ['game.js']
+};
+
 get '/join/game_id?' => sub {
 	template 'game/join', {
 	};
 };
 
-get '/' => sub {
+get q{/} => sub {
 	my $all_games = $games->list();
 
 	if (! scalar @{$all_games}) {

@@ -125,7 +125,7 @@ get '/join/:activity_id' => sub {
 	return redirect '/activity/play/' . $activity_id;
 };
 
-get '/display/:activity_id' => sub {
+get '/watch/:activity_id' => sub {
 	my $activity_id = route_parameters->get('activity_id') ;
 	my $activity = $activities->get($activity_id);
 	if (!$activity) {
@@ -135,7 +135,7 @@ get '/display/:activity_id' => sub {
 
 	$activity = $activities->load_related($activity);
 
-	template 'activity/play', {
+	template 'activity/watch', {
 		activity => $activity,
 		displayOnly => 1
 	};
