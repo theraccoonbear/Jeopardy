@@ -17,7 +17,9 @@ my $db = $mongo->get_database("jeopardy");
 has 'model_name' => (
 	is => 'rw',
 	isa => sub {
-		croak "\"$_[0]\" is not a valid model_name " unless $_[0] =~ /^[a-zA-Z][a-zA-Z0-9_]+$/xsm;
+		if ($_[0] !~ /^[a-zA-Z][a-zA-Z0-9_]+$/xsm) {
+			croak "\"$_[0]\" is not a valid model_name";
+		}
 	},
 	default => '_model_'
 );
@@ -46,13 +48,27 @@ sub _cond {
 	return $cond;
 }
 
+sub prepareIDs {
+	my ($self, $results) = @_;
+
+	if (ref $results ne 'ARRAY') {
+		$results = [$results];
+	}
+
+	foreach my $res (@$results) {
+		$res->{id} = $res->{_id}->to_string;
+	}
+
+	return $results;
+}
+
 sub list {
 	my ($self) = @_;
 	
 	my $coll = $self->collection();
 	
-	my $objects = [$coll->find()->all()];
-	return $objects;
+	my $res = [$coll->find()->all()];
+	return $res;
 }
 
 sub find {

@@ -1,0 +1,15 @@
+<h1>Existing games</h1>
+<p>Looks like you're already running this game.  Pick from the list below or choose "New Game"</p>
+
+<ul class="list-unstyled">
+	[% FOREACH activity IN existing %]
+	<li>
+		<strong>[% activity.game.name %]</strong> [% FOREACH player IN activity.players %]|[% END %] 
+		<a href="/activity/run/[% activity.id %]" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Host</a>
+		<a href="/activity/delete/[% activity.id %]" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+		<a href="/activity/join/[% activity.id %]" class="btn btn-primary"><span class="glyphicon glyphicon-play"></span> Play</a>
+	</li>
+	[% END %]
+	<li>No, none of these <a href="/activity/from/[% activity.game.id %]?new=1" class="btn btn-success">Create New</a></li>
+</ul>
+

@@ -21,7 +21,6 @@ get q{/} => sub {
 		$activities->load_related($_)
 	} @{$activities->find()}];
 
-
 	return template 'activity/index', {
 		existing => $existing_activities,
 		count => scalar @{$existing_activities}
@@ -115,8 +114,6 @@ get '/join/:activity_id' => sub {
 		$_->{username} eq session 'username';
 	} @{$activity->{state}->{players}};
 
-	say STDERR "COUNT: $cnt";
-
 	if (!$cnt) {
 		push @{$activity->{state}->{players}}, {
 			username => session('username'),
@@ -126,6 +123,22 @@ get '/join/:activity_id' => sub {
 	}
 
 	return redirect '/activity/play/' . $activity_id;
+};
+
+get '/display/:activity_id' => sub {
+	my $activity_id = route_parameters->get('activity_id') ;
+	my $activity = $activities->get($activity_id);
+	if (!$activity) {
+		flash(error => 'activity not found');
+		return redirect '/activity/';
+	}
+
+	$activity = $activities->load_related($activity);
+
+	template 'activity/play', {
+		activity => $activity,
+		displayOnly => 1
+	};
 };
 
 get '/play/:activity_id' => sub {

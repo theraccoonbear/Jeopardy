@@ -30,6 +30,7 @@ get '/' => sub {
 			name => "Fun New Game #" . (int(rand() * 10_000)),
 			owner => session('username')
 		});
+		$all_games = $games->list();
 	}
 
 	template 'game/index', {

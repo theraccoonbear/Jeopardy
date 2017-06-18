@@ -3,7 +3,7 @@
 # all the settings in this file will be loaded at Dancer's startup.
 
 # Your application's name
-appname: "app"
+appname: "jeopardy"
 
 # The default layout to use for your application (located in
 # views/layouts/main.tt)
@@ -18,7 +18,7 @@ charset: "UTF-8"
 # simple: default and very basic template engine
 # template_toolkit: TT
 
-template: "handlebars"
+#template: "handlebars"
 
 # template: "template_toolkit"
 # engines:
@@ -52,9 +52,18 @@ template: "handlebars"
 #      is_http_only: 1
 
 session: MongoDB
+template: "template_toolkit"
+
 engines:
   session:
     MongoDB:
-      database_name: myapp_db
+      database_name: jeopardy
       client_options:
         host: mongodb://jeopardy-mongodb:27017
+  template:
+    template_toolkit:
+      # start_tag: '<%'
+      # encoding: '%>'
+      show_private_variables: true
+      plugins:
+        json: 'Template::Plugin::JSON'

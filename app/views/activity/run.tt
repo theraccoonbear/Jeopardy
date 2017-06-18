@@ -1,0 +1,1 @@
+[% INCLUDE part/game_board.tt game => activity.game %]

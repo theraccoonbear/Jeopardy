@@ -1,0 +1,34 @@
+<h1>Run Game</h1>
+<div class="row">
+	<div class="col-md-6">
+		<a href="/game/random" class="btn btn-lg btn-success btn-block action-delete">Create Random</a>
+	</div>
+	<div class="col-md-6">
+		<a href="/game/import" class="btn btn-lg btn-primary btn-block action-import">Import JSON</a>
+	</div>
+</div>
+<ul class="list-unstyled">
+	[% FOREACH game IN games %]
+	<li>
+		<strong>[% game.name %]</strong> (<em>[% game.owner %]</em>)<br>
+		<div class="btn-group" role="group" aria-label="...">
+			<a href="/game/edit/[% game._id %]" class="btn btn-warning"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+			<a href="/activity/from/[% game._id %]" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Host</a>
+			<a href="/game/delete/[% game._id %]" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a></li>
+		</div>
+	[% END %]
+	<li>
+		<form method="post" action="/game/new">
+		<div class="row">
+			<div class="col-xs-6 col-md-10">
+				<input class="form-control" type="text" id="gameName" name="gameName" placeholder="New game name...">
+			</div>
+			<div class="col-xs-6 col-md-2">
+				<button type="submit" class="btn btn-success btn-md btn-block" id="newGame">Create New</a>
+			</div>
+		</div>
+		</form>
+	</li>
+</ul>
+
+	

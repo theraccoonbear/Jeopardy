@@ -1,0 +1,7 @@
+<form method="post">
+<ul class="list-unstyled">
+	[% FOREACH file IN files %]
+	<li><button type="submut" name="file" value="[% file %]" class="btn btn-lg btn-block btn-primary">[% file %]</button></li>
+	[% END %]
+</ul>
+</form>

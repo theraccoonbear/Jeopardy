@@ -1,0 +1,19 @@
+<h1>Active Games</h1>
+
+<ul class="list-unstyled">
+	[% FOREACH activity IN existing %]
+	<li>
+		<strong>[% activity.game.name %]</strong> run by <strong>[% activity.runner.username %]</strong> with <em>[% activity.player_count %] players</em>
+		<div class="btn-group" role="group" aria-label="...">
+			<a href="/activity/run/[% activity._id %]" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Host</a>
+			<a href="/activity/join/[% activity._id %]" class="btn btn-primary"><span class="glyphicon glyphicon-play"></span> Play</a>
+			<a href="/activity/watch/[% activity._id %]" class="btn btn-info"><span class="glyphicon glyphicon-eye-open"></span> Watch</a>
+			<a href="/activity/delete/[% activity._id %]" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+		</div>
+	</li>
+	[% END %]
+	[% UNLESS count %]
+	<li>No current games</li>
+	[% END %]
+</ul>
+
