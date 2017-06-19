@@ -1,17 +1,8 @@
-<%#with activity%>
-	<div class="jeopardy-board header row">
-		<%#each game.categories%>
-		<div class="category block col-md-2"><span><%name%></span></div>
-		<%/each%>
-	</div>
+[% USE JSON ( pretty => 1, allow_blessed => 1 ) %]
 
-	<div class="answer-grid">
-		<%#each game.answers%>
-		<div class="jeopardy-board row">
-			<%#each points%>
-			<div class="point block col-md-2"><span>$<%value%></span></div>
-			<%/each%>
-		</div>
-		<%/each%>
-	</div>
-<%/with%>
+[% INCLUDE part/game_board.tt game => activity.game %]
+
+<script>
+	var game = [% activity.game.json %];
+	var activity_id = '[% activity_id %]';
+</script>

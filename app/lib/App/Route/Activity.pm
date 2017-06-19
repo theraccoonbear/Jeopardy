@@ -10,10 +10,12 @@ use Data::Printer;
 use App::Model::User;
 use App::Model::Game;
 use App::Model::Activity;
+use App::Model::Event;
 
 my $users = App::Model::User->new();
 my $games = App::Model::Game->new();
 my $activities = App::Model::Activity->new();
+my $events = App::Model::Event->new();
 
 prefix '/activity';
 get q{/} => sub {
@@ -160,9 +162,13 @@ get '/play/:activity_id' => sub {
 	}
 
 	$activity = $activities->load_related($activity);
+	var 'extra_scripts' => ['play.js'];
+
+	$events->emitEvent($activity->{_id}, 'player-join', { player_id => session('user')->{_id}});
 
 	template 'activity/play', {
-		activity => $activity
+		activity => $activity,
+		activity_id => $activity->{_id}->to_string
 	};
 };
 
