@@ -13,7 +13,7 @@ use App::Model::User;
 use App::Auth;
 use App::Route::Game;
 use App::Route::Activity;
-use App::Route::WebSocket;
+#use App::Route::WebSocket;
 our $VERSION = 0.1;
 
 
