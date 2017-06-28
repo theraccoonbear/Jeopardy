@@ -30,6 +30,8 @@ hook before => sub {
 		flash(error => 'you must login first');
 		redirect '/login';
 	}
+
+	say STDERR 'Processing request for: ' . request->path_info;
 };
 
 get q{/} => sub {

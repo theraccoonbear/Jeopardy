@@ -7,4 +7,4 @@ cd /opt/src
 
 #perl -I /opt/src/modules/lib/perl5 /opt/src/modules/bin/plackup -R /opt/src/app/bin,/opt/src/app/lib -r /opt/src/app/bin/app.psgi
 #/opt/src/modules/bin/plackup -R /opt/src/app/bin,/opt/src/app/lib -r /opt/src/app/bin/app.psgi
-perl -I /opt/src/modules/lib/perl5 `which plackup`  --server Twiggy -R /opt/src/app/bin,/opt/src/app/lib -r /opt/src/app/bin/app.psgi
+PERL_MONGO_NO_DEP_WARNINGS=1 perl -I /opt/src/modules/lib/perl5 `which plackup`  --server Twiggy -R /opt/src/app/bin,/opt/src/app/lib -r /opt/src/app/bin/app.psgi

@@ -2,84 +2,97 @@ package App::Route::WebSocket;
 use strict;
 use warnings;
 our $VERSION = 0.1;
+use utf8;
 
-use FindBin;
-use Dancer2 appname => 'jeopardy';
 use Plack::App::WebSocket;
-use Dancer2::Plugin::Flash;
 use AnyEvent;
 use AnyEvent::HTTP;
 use Data::Printer;
-# use App::Model::User;
-# use App::Model::Game;
-# use App::Model::Activity;
+use JSON::XS;
+use List::Util qw(min max);
 
 my $events = App::Model::Event->new();
-my $conn;
+my $json = JSON::XS->new->ascii->pretty->allow_nonref->allow_blessed;
 
 sub to_app {
     return Plack::App::WebSocket->new(
         on_error => sub {
             my $env = shift;
+
+            say STDERR "WebSocket error: " . $env->{"plack.app.websocket.error"};
             return [500,
                     ["Content-Type" => "text/plain"],
                     ["Error: " . $env->{"plack.app.websocket.error"}]];
         },
         on_establish => sub {
-            $conn = shift; ## Plack::App::WebSocket::Connection object
+            my $conn = shift; ## Plack::App::WebSocket::Connection object
             my $env = shift;  ## PSGI env
+            my $w;
+            my $cursor;
+
+            say STDERR "WebSocket established";
+
+            #$conn->send('OH HAI!');
 
             $conn->on(
                 message => sub {
                     my ($connection, $msg) = @_;
                     my $dat = decode_json($msg);
+                    say STDERR "WebSocket message:";
+                    #p($msg);
                     p($dat);
+
+                    my $resp = {};
                     
                     if ($dat->{action}) {
                         if ($dat->{action} eq 'reveal') {
-                            $dat = {
-                                msg => ("Revealing: " . $dat->{catIdx} . ":" . $dat->{rowIdx})
+                            $resp = {
+                                msg => 'reveal square',
+                                payload => $dat->{payload}
                             };
                         } elsif ($dat->{action} eq 'subscribe') {
                             say STDERR "Subscribing to " . $dat->{activity_id};
-                            my $cursor = $events->tailFind({
-                                activity_id => $dat->{activity_id}
-                            });
-                            say STDERR "CURSOR:";
-                            p($cursor);
+                            
+                            # @todo figure this stuff out
+                            #$cursor = $events->tailFind($dat->{activity_id});
+                            # say STDERR "CURSOR:";
+                            # p($cursor);
 
 
-                            $dat->{msg} = 'subscribed';
-                            $connection->send(encode_json($dat));
+                            $resp->{msg} = 'subscribed';
+                            my $seconds = 5;
+                            my $last_event = time;
+                            $w = AnyEvent->timer(after => 0, interval => $seconds, cb => sub {
+                                my $new_events = $events->find({timestamp => { '$gte' => $last_event }});
 
-                            my $seconds = 0.1;
-                            my $done = AnyEvent->condvar;
-                            my $w = AnyEvent->timer(after => 0, interval => $seconds, cb => sub {
-                                if (defined(my $doc = $cursor->next)) {
-                                    say STDERR "NEW EVENT:";
-                                    p($doc);
-                                    $connection->send(encode_json({
-                                        msg => "We got it!",
-                                        data => $doc
+                                if (scalar @{$new_events} > 0) {
+                                    p($new_events);
+                                    $connection->send($json->encode({
+                                        payload => $new_events,
+                                        now => time
                                     }));
+                                    foreach my $ev (@{$new_events}) {
+                                        $last_event = max($last_event, $ev->{timestamp});
+                                    }
                                 } else {
-                                    print STDERR 'z';
+                                    say STDERR "no events";
                                 }
                             });
-                            $done->recv;
                         }
                     } else {
-                        $dat->{msg} .= ' PING!';
+                        $resp->{msg} .= ' PING!';
                     }
-                    say STDERR "Here we are";
-                    $connection->send(encode_json($dat));
-                    return 1;
+                    $resp->{now} = time;
+                    $connection->send($json->encode($resp));
+                    return;
                 },
                 finish => sub {
                     undef $conn;
-                    warn "Bye!!\n";
+                    #warn "Bye!!\n";
+                    say STDERR "WebSocket finish occured";
                 },
             );
+            return $conn;
         }
     )->to_app;
 }

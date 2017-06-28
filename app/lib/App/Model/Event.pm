@@ -23,8 +23,17 @@ sub tailFind {
 	my ($self, $activity_id) = @_;
 
 	say STDERR "Getting tailed...";
-	# {activity_id => $self->oid($activity_id)}
-	my $tailed = $self->collection()->find->tailable(1);
+	my $cond = {
+		activity_id => $self->oid($activity_id)
+	};
+
+	p($cond);
+	my $tailed = $self
+		->collection()
+		->find($cond)
+		->tailable_await(1);
+		# ->max_await_time_ms(1000);
+	#p($tailed);
 	say STDERR "...OK";
 	return $tailed;
 }
@@ -35,7 +44,8 @@ sub emitEvent {
 	my $event = {
 		activity_id => $activity_id,
 		type => $type,
-		data => $data
+		data => $data,
+		timestamp => time
 	};
 
 	return $self->add($event);
