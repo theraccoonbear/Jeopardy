@@ -10,8 +10,10 @@ use AnyEvent::HTTP;
 use Data::Printer;
 use JSON::XS;
 use List::Util qw(min max);
+use App::Model::Session;
 
 my $events = App::Model::Event->new();
+my $sessions = App::Model::Session->new();
 my $json = JSON::XS->new->ascii->pretty->allow_nonref->allow_blessed;
 
 sub to_app {
@@ -28,11 +30,21 @@ sub to_app {
             my $conn = shift; ## Plack::App::WebSocket::Connection object
             my $env = shift;  ## PSGI env
             my $w;
+            my $cookies = {map { split(/=/, $_) } split(/;\s*/, $env->{HTTP_COOKIE} || '')};
+            my $session;
             my $cursor;
 
+            
+            say STDERR "WebSocket connecting...";
+            if ($cookies->{'dancer.session'}) {
+                p($cookies->{'dancer.session'});
+                $session = $sessions->get('xxx'); #$cookies->{'dancer.session'});
+            }
+            p($session);
+            # if (!$session) {
+            #     $conn->close();
+            # }
             say STDERR "WebSocket established";
-
-            #$conn->send('OH HAI!');
 
             $conn->on(
                 message => sub {
@@ -46,24 +58,25 @@ sub to_app {
                     
                     if ($dat->{action}) {
                         if ($dat->{action} eq 'reveal') {
-                            $resp = {
-                                msg => 'reveal square',
-                                payload => $dat->{payload}
-                            };
+                            say STDERR "REVEAL!";
+                            # $events->emitEvent('reveal', 123, $dat->{activity_id}, {
+                            #     row => $dat->{payload}->{row},
+                            #     row => $dat->{payload}->{col},
+                            # });
                         } elsif ($dat->{action} eq 'subscribe') {
                             say STDERR "Subscribing to " . $dat->{activity_id};
                             
-                            # @todo figure this stuff out
+                            # @todo figure this tailed cursor stuff out
                             #$cursor = $events->tailFind($dat->{activity_id});
                             # say STDERR "CURSOR:";
                             # p($cursor);
 
 
                             $resp->{msg} = 'subscribed';
-                            my $seconds = 5;
+                            my $seconds = 1;
                             my $last_event = time;
                             $w = AnyEvent->timer(after => 0, interval => $seconds, cb => sub {
-                                my $new_events = $events->find({timestamp => { '$gte' => $last_event }});
+                                my $new_events = $events->find({timestamp => { '$gt' => $last_event }});
 
                                 if (scalar @{$new_events} > 0) {
                                     p($new_events);
@@ -71,19 +84,20 @@ sub to_app {
                                         payload => $new_events,
                                         now => time
                                     }));
+                                    my $old_last = $last_event;
                                     foreach my $ev (@{$new_events}) {
                                         $last_event = max($last_event, $ev->{timestamp});
                                     }
-                                } else {
-                                    say STDERR "no events";
                                 }
                             });
                         }
                     } else {
                         $resp->{msg} .= ' PING!';
                     }
-                    $resp->{now} = time;
-                    $connection->send($json->encode($resp));
+                    if ($resp->{msg}) {
+                        $resp->{now} = time;
+                        $connection->send($json->encode($resp));
+                    }
                     return;
                 },
                 finish => sub {

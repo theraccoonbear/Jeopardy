@@ -98,7 +98,9 @@ sub get {
 	my ($self, $cond) = @_;
 	
 	my $coll = $self->collection();
-	return $coll->find_one($self->_cond($cond));
+	my $c = $self->_cond($cond);
+	p($c);
+	return $coll->find_one($c);
 }
 
 sub remove {

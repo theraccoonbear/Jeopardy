@@ -27,7 +27,6 @@ sub tailFind {
 		activity_id => $self->oid($activity_id)
 	};
 
-	p($cond);
 	my $tailed = $self
 		->collection()
 		->find($cond)
@@ -39,9 +38,10 @@ sub tailFind {
 }
 
 sub emitEvent {
-	my ($self, $activity_id, $type, $data) = @_;
+	my ($self, $user_id, $activity_id, $type, $data) = @_;
 
 	my $event = {
+		user_id => $user_id,
 		activity_id => $activity_id,
 		type => $type,
 		data => $data,
