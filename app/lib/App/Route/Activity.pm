@@ -85,9 +85,14 @@ get '/run/:activity_id' => sub {
 	$activity->{game} = $games->get($activity->{game_id});
 
 	var 'activity' => $activity;
+	var 'extra_scripts' => ['play.js'];
 
-	return template 'activity/run', {
-		activity => $activity
+	$events->emitEvent(session('user')->{_id}, $activity->{_id}, 'player_running', { player => session('user'), player_id => session('user')->{_id}});
+
+	template 'activity/play', {
+		activity => $activity,
+		activity_id => $activity->{_id}->to_string,
+		running => 1
 	};
 };
 

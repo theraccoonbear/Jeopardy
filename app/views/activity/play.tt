@@ -2,6 +2,8 @@
 
 [% INCLUDE part/game_board.tt game => activity.game %]
 
+<ul class="notices" id="notices"></ul>
+
 <ul id="playerList">
 	[% FOREACH player IN activity.state.players %]
 	<li data-player="[% player.username %]">[% player.username %]</li>
@@ -10,7 +12,26 @@
 
 <div class="overlay-pane" id="answerRevealer">
 	<h1></h1>
-	<button type="button" id="buzzIn" class="btn btn-danger btn-block btn-lg">Buzz In!</button>
+	
+	[% IF running %]
+	<div id="playerBuzzed" class="hidden">
+		<strong><span id="buzzerName"></span> Buzzed!</strong>
+		<div class="row">
+			<div class="col-md-6">
+				<button type="button" id="acceptAnswer" class="btn btn-success btn-block btn-lg">Accept</button>
+			</div>
+			<div class="col-md-6">
+				<button type="button" id="wrongAnswer" class="btn btn-danger btn-block btn-lg">Wrong</button>
+			</div>
+		</div>
+	</div>
+	[% ELSE %]
+	<div class="row">
+		<div class="col-md-12">
+			<button type="button" id="buzzIn" class="btn btn-danger btn-block btn-lg">Buzz In!</button>
+		</div>
+	</div>
+	[% END %]
 </div>
 
 <div class="overlay-pane" id="statusPane">
@@ -20,4 +41,5 @@
 <script>
 	var game = [% activity.game.json %];
 	var activity_id = '[% activity_id %]';
+	var running = !!'[% running %]';
 </script>

@@ -63,6 +63,7 @@ sub to_app {
                     my $resp = {};
                     
                     if ($dat->{action}) {
+                        $act = $activities->get($dat->{activity_id});
                         if ($dat->{action} eq 'subscribe') {
                             say STDERR "Subscribing to " . $dat->{activity_id};
                             $resp->{msg} = 'subscribed';
@@ -93,7 +94,7 @@ sub to_app {
                                 col => $dat->{payload}->{col},
                             });
                         } elsif ($dat->{action} eq 'buzz') {
-                            $act = $activities->get($dat->{activity_id});
+                            #$act = $activities->get($dat->{activity_id});
                             say STDERR "Buzz for:";
                             p($act);
                             if ($act->{state}->{phase} eq 'reveal') {
@@ -103,6 +104,18 @@ sub to_app {
                                 $resp->{msg} = 'Not in reveal state!';
                             }
                             
+                        } elsif ($dat->{action} eq 'accept_answer') {
+                            if ($act->{state}->{phase} eq 'answering') {
+                                $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'accept_answer', $session->{data}->{user});
+                            } else {
+                                $resp->{msg} = 'Not in answering state!';
+                            }
+                        } elsif ($dat->{action} eq 'wrong_answer') {
+                            if ($act->{state}->{phase} eq 'answering') {
+                                $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'wrong_answer', $session->{data}->{user});
+                            } else {
+                                $resp->{msg} = 'Not in answering state!';
+                            }
                         } else {
                             say STDERR "Unknown WebSocket Action: " .  $dat->{action};
                         }

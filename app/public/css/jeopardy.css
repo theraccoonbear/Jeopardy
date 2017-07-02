@@ -3,6 +3,7 @@ body {
 }
 .main-container {
 	margin-top: 70px;
+	color: #fff;
 }
 
 .notification-container {
@@ -56,4 +57,17 @@ body {
 	color: #ffc90e;
 	text-shadow: -2px 2px 3px rgba(0, 0, 0, 1);
 	font-size: 36px;
+}
+
+.notices {
+	z-index: 9999;
+	position: fixed;
+	right: 20px;
+	top: 80px;
+	width: 250px;
+	list-style: none;
+}
+
+.hidden {
+	display: none;
 }

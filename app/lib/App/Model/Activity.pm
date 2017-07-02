@@ -37,6 +37,8 @@ sub set_phase {
 		'state.phase' => $phase, 
 		'state.meta' => $meta
 	});
+
+	return;
 }
 
 1;

@@ -9,6 +9,41 @@ var Game = function(opts) {
 	ctxt.$statusText = ctxt.$statusPane.find('h1');
 };
 
+Game.prototype.showNotice = function(msg, opts) {
+	var ctxt = this;
+	opts = opts || {};
+	var type = opts.type || 'success'
+
+	var $note = $(
+`<li class="alert alert-${type} alert-dismissible show" role="alert">
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+  ${msg}
+</li>`);
+
+	$note
+		.css({
+			opacity: 0
+		})
+		.animate({opacity: 1}, 250)
+		.appendTo($notices);
+
+	setTimeout(function() {
+		$note.animate({
+			opacity: 0,
+			height: 0,
+			width: 0
+		}, {
+			duration: 250,
+			complete: function() {
+				$note.remove();
+				$note = null;
+			}
+		})
+	}, 3000)
+};
+
 Game.prototype.showAnswer = function(row, col) {
 	var ctxt = this;
 	var $row = $('.jeopardy-board.row:eq(' + (row + 1) + ')');
@@ -63,17 +98,29 @@ $(function() {
 				ES.emitEvent('reveal', activity_id, {row: row, col: col});
 			});
 
-			$buzzIn.on('click', function(e) {
-				ES.emitEvent('buzz', activity_id, {});
-			});
+			if (running) {
+				$acceptAnswer.on('click', function(e) {
+					ES.emitEvent('accept_answer', activity_id, {});
+				});
+
+				$wrongAnswer.on('click', function(e) {
+					ES.emitEvent('wrong_answer', activity_id, {});
+				});
+			} else {
+				$buzzIn.on('click', function(e) {
+					ES.emitEvent('buzz', activity_id, {});
+				});
+			}
 		},
 		on: {
 			reveal: function(payload) {
+				if (running) { $playerBuzzed.addClass('hidden'); }
 				ourGame.showAnswer(payload.row, payload.col)
 			},
 			player_play: function(payload) {
 				console.log('player!', payload);
 				var $player = $playerList.find('li[data-player="' + payload.player.username + '"]');
+				ourGame.showNotice(payload.player.username + ' is playing now!');
 				if (!$player.length) {
 					var $newplayer = $('<li data-player="' + payload.player.username + '">' + payload.player.username + '<li>');
 					$playerList.append($newplayer);
@@ -81,7 +128,16 @@ $(function() {
 			},
 			buzz: function(payload) {
 				console.log('Buzz:', payload);
-				ourGame.showStatus(payload.username + ' buzzed');
+				ourGame.showNotice(payload.username + ' buzzed');
+				if (running) {
+					$buzzerName.html(payload.username);
+					$playerBuzzed.removeClass('hidden');
+				} else {
+					$buzzIn.hide();
+				}
+			},
+			player_running: function(payload) {
+				ourGame.showNotice(payload.player.username + ' is running the game!');
 			}
 		}
 	});
