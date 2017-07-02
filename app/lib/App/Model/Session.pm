@@ -15,12 +15,10 @@ has '+model_name' => (default => 'dancer_sessions');
 sub get {
 	my ($self, $cond) = @_;
 	
-	
-	my $c = $self->_cond($cond);
-	say STDERR "Condition:";
-	p($c);
+	my $c = { _id => $cond };
 	my $coll = $self->collection();
 	return $coll->find_one($c);
+	return;
 }
 
 1;

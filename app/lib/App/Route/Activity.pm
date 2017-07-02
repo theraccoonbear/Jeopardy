@@ -122,6 +122,7 @@ get '/join/:activity_id' => sub {
 			score => 0
 		};
 		$activities->save($activity->{_id}, $activity);
+		$events->emitEvent($activity->{_id}, session('user')->{_id}, 'player_join', { message => session('username') . ' joined'});
 	}
 
 	return redirect '/activity/play/' . $activity_id;
@@ -164,7 +165,7 @@ get '/play/:activity_id' => sub {
 	$activity = $activities->load_related($activity);
 	var 'extra_scripts' => ['play.js'];
 
-	$events->emitEvent(session('user')->{_id}, $activity->{_id}, 'player-join', { player_id => session('user')->{_id}});
+	$events->emitEvent(session('user')->{_id}, $activity->{_id}, 'player_play', { player_id => session('user')->{_id}});
 
 	template 'activity/play', {
 		activity => $activity,

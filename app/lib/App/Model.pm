@@ -83,7 +83,7 @@ sub find {
 sub add {
 	my ($self, $obj) = @_;
 	my $coll = $self->collection();
-	#$obj->{_created}  
+	#$obj->{_created}
 	return $coll->insert_one($obj);
 }
 
@@ -97,10 +97,10 @@ sub save {
 sub get {
 	my ($self, $cond) = @_;
 	
-	my $coll = $self->collection();
 	my $c = $self->_cond($cond);
-	say STDERR "Condition:";
+	say STDERR $self->model_name . "->get() Condition:";
 	p($c);
+	my $coll = $self->collection();
 	return $coll->find_one($c);
 }
 

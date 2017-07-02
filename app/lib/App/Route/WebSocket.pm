@@ -40,10 +40,11 @@ sub to_app {
 
             say STDERR "WebSocket connecting...";
             if ($cookies->{'dancer.session'}) {
-                p($cookies->{'dancer.session'});
-               # $session = $sessions->get('xxx'); #$cookies->{'dancer.session'});
+                say STDERR "Getting session...";
+                $session = $sessions->get($cookies->{'dancer.session'});
+                say STDERR "Session:";
+                p($session);
             }
-            #p($session);
             # if (!$session) {
             #     $conn->close();
             # }
@@ -61,28 +62,21 @@ sub to_app {
                     
                     if ($dat->{action}) {
                         if ($dat->{action} eq 'reveal') {
-                            say STDERR "REVEAL!";
-                            $events->emitEvent('59542ecd400892004b38f7a1', $dat->{activity_id}, 'reveal', {
+                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'reveal', {
                                 row => $dat->{payload}->{row},
                                 col => $dat->{payload}->{col},
                             });
                         } elsif ($dat->{action} eq 'subscribe') {
                             say STDERR "Subscribing to " . $dat->{activity_id};
-                            
-                            # @todo figure this tailed cursor stuff out
-                            #$cursor = $events->tailFind($dat->{activity_id});
-                            # say STDERR "CURSOR:";
-                            # p($cursor);
-
-
                             $resp->{msg} = 'subscribed';
-                            my $seconds = 1;
+                            my $seconds = 0.1;
                             my $last_event = time;
                             $w = AnyEvent->timer(after => 0, interval => $seconds, cb => sub {
                                 my $new_events = $events->find({timestamp => { '$gt' => $last_event }});
 
                                 if (scalar @{$new_events} > 0) {
-                                    p($new_events);
+                                    my $cnt = scalar @$new_events;
+                                    say STDERR "$cnt events";
                                     $connection->send($json->encode({
                                         payload => $new_events,
                                         now => time
@@ -91,11 +85,15 @@ sub to_app {
                                     foreach my $ev (@{$new_events}) {
                                         $last_event = max($last_event, $ev->{timestamp});
                                     }
+                                } else {
+                                    #print STDERR '.';
                                 }
                             });
+                        } elsif ($dat->{action} eq 'buzz') {
+                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'buzz', {user_id => $session->{data}->{user}->{_id}->value});
+                        } else {
+                            say STDERR "Unknown WebSocket Action: " .  $dat->{action};
                         }
-                    } else {
-                        $resp->{msg} .= ' PING!';
                     }
                     if ($resp->{msg}) {
                         $resp->{now} = time;
