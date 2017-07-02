@@ -1,6 +1,6 @@
 <div class="jeopardy-board header row">
 	[% FOREACH cat IN game.categories %]
-	<div class="category block col-md-2"><span>[% cat.name %]</span></div>
+	<div class="category block col-xs-2"><span>[% cat.name %]</span></div>
 	[% END %]
 </div>
 
@@ -8,7 +8,7 @@
 	[% FOREACH cat IN game.answers %]
 	<div class="jeopardy-board row">
 		[% FOREACH answer IN cat.points %]
-		<div class="point block col-md-2"><span>$[% answer.value %]</span></div>
+		<div class="point block col-xs-2"><span>$[% answer.value %]</span></div>
 		[% END %]
 	</div>
 	[% END %]

@@ -12,7 +12,7 @@ var Game = function(opts) {
 Game.prototype.showNotice = function(msg, opts) {
 	var ctxt = this;
 	opts = opts || {};
-	var type = opts.type || 'success'
+	var type = opts.type || 'info'
 
 	var $note = $(
 `<li class="alert alert-${type} alert-dismissible show" role="alert">
@@ -81,6 +81,26 @@ $(function() {
 	var failedConnections = 0;
 	var reconnectDelay = 1000; // ms until reconnect
 	var ourGame = new Game(game);
+
+	var $pointBlocks = $('.point.block');
+	var $categoryBlocks = $('.category.block');
+
+	var scaleType = function(e) {
+		var w = $pointBlocks.width();
+		var h = $pointBlocks.height();
+
+		var v = Math.min(w, h);
+
+		$pointBlocks.css({
+			fontSize: Math.round(v / 2) + 'px'
+		});
+		$categoryBlocks.css({
+			fontSize: Math.round(v / 3) + 'px'
+		});
+	};
+
+	$(window).on('resize', scaleType);
+	scaleType();
 
 	var ES = new EventSocket({
 		url: ws_url,
