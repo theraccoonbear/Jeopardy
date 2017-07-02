@@ -99,6 +99,7 @@ sub get {
 	
 	my $coll = $self->collection();
 	my $c = $self->_cond($cond);
+	say STDERR "Condition:";
 	p($c);
 	return $coll->find_one($c);
 }

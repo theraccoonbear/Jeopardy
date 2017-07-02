@@ -41,9 +41,9 @@ sub emitEvent {
 	my ($self, $user_id, $activity_id, $type, $data) = @_;
 
 	my $event = {
-		user_id => $user_id,
-		activity_id => $activity_id,
-		type => $type,
+		user_id => $self->oid($user_id),
+		activity_id => $self->oid($activity_id),
+		action => $type,
 		data => $data,
 		timestamp => time
 	};

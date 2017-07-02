@@ -4,6 +4,7 @@ use warnings;
 our $VERSION = 0.1;
 use utf8;
 
+use Dancer2 appname => 'jeopardy';
 use Plack::App::WebSocket;
 use AnyEvent;
 use AnyEvent::HTTP;
@@ -32,15 +33,17 @@ sub to_app {
             my $w;
             my $cookies = {map { split(/=/, $_) } split(/;\s*/, $env->{HTTP_COOKIE} || '')};
             my $session;
-            my $cursor;
+            #my $cursor;
 
-            
+            say STDERR "Cookies:";
+            p($cookies);
+
             say STDERR "WebSocket connecting...";
             if ($cookies->{'dancer.session'}) {
                 p($cookies->{'dancer.session'});
-                $session = $sessions->get('xxx'); #$cookies->{'dancer.session'});
+               # $session = $sessions->get('xxx'); #$cookies->{'dancer.session'});
             }
-            p($session);
+            #p($session);
             # if (!$session) {
             #     $conn->close();
             # }
@@ -59,10 +62,10 @@ sub to_app {
                     if ($dat->{action}) {
                         if ($dat->{action} eq 'reveal') {
                             say STDERR "REVEAL!";
-                            # $events->emitEvent('reveal', 123, $dat->{activity_id}, {
-                            #     row => $dat->{payload}->{row},
-                            #     row => $dat->{payload}->{col},
-                            # });
+                            $events->emitEvent('59542ecd400892004b38f7a1', $dat->{activity_id}, 'reveal', {
+                                row => $dat->{payload}->{row},
+                                col => $dat->{payload}->{col},
+                            });
                         } elsif ($dat->{action} eq 'subscribe') {
                             say STDERR "Subscribing to " . $dat->{activity_id};
                             

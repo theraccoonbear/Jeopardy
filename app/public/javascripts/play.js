@@ -1,6 +1,19 @@
 var socket;
+
+var Game = function(opts) {
+	this.options = $.extend({}, opts);
+};
+
+Game.prototype.showAnswer = function(row, co) {
+	var ctxt = this;
+
+	ctxt.options
+}
+
 $(function() {
 	var ws_path = "ws://localhost:5000/websocket/";
+	var failedConnections = 0;
+	var reconnectDelay = 5000; // ms until reconnect
 
 	function connect() {
 		console.log('Connecting to:', ws_path);
@@ -8,12 +21,14 @@ $(function() {
 
 		socket.onmessage = function(e) {
 			var data = JSON.parse(e.data);
-			console.log(data);
+			console.log('data:', data);
 			if (data.payload) {
 				$.each(data.payload, function(i, ev) {
 					if (ev.action === 'reveal') {
-						var $row = $('.jeopardy-row:eq(' + ev.payload.row + ')');
-						console.log('reveal:', $row);
+						var $row = $('.jeopardy-board.row:eq(' + (ev.data.row + 1) + ')');
+						var $cell = $row.find('.point.block:eq(' + ev.data.col + ')');
+						console.log('reveal:', $cell);
+						console.log(game);
 					}
 				});
 			} else if (data.msg) {
@@ -29,8 +44,12 @@ $(function() {
 
 		socket.onclose = function(x) {
 			console.log('Socket closing!', x);
-			console.log('Reconnecting in 1 second')
-			setTimeout(connect, 1000);
+			console.log('Reconnecting in ' + (reconnectDelay / 1000) + ' second(s)')
+			setTimeout(connect, reconnectDelay);
+		}
+
+		socket.onerror = function(e) {
+			console.log("ERROR:", e);
 		}
 	}
 
