@@ -8,9 +8,13 @@
 	[% END %]
 </ul>
 
-<div class="answer-revealer" id="answerRevealer">
+<div class="overlay-pane" id="answerRevealer">
 	<h1></h1>
 	<button type="button" id="buzzIn" class="btn btn-danger btn-block btn-lg">Buzz In!</button>
+</div>
+
+<div class="overlay-pane" id="statusPane">
+	<h1></h1>
 </div>
 
 <script>

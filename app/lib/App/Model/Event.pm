@@ -38,12 +38,14 @@ sub tailFind {
 }
 
 sub emitEvent {
-	my ($self, $user_id, $activity_id, $type, $data) = @_;
+	my ($self, $user_id, $activity_id, $action, $data) = @_;
+
+	$action =~ s/[^A-Za-z_]+/_/xsm;
 
 	my $event = {
 		user_id => $self->oid($user_id),
 		activity_id => $self->oid($activity_id),
-		action => $type,
+		action => $action,
 		data => $data,
 		timestamp => time
 	};

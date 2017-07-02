@@ -30,7 +30,7 @@ EventSocket.prototype._dispatch = function(event, data) {
 	if (typeof ctxt._eventHandlers[event] !== 'undefined') {
 		if (ctxt._eventHandlers[event].length > 0) {
 			any = true;
-			console.log('Dispatching', ctxt._eventHandlers[event].length, 'events of type', event);
+			console.log('Dispatching', ctxt._eventHandlers[event].length, 'event(s) of type', event);
 			$.each(ctxt._eventHandlers[event], function(idx, hdlr) {
 				hdlr(data);
 			});
@@ -81,7 +81,7 @@ EventSocket.prototype.connect = function(url) {
 	}
 
 	ctxt._socket.onerror = function(e) {
-		console.log("ERROR:", e);
+		console.log("WEBSOCKET ERROR:", e);
 	}
 };
 

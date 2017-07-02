@@ -14,6 +14,7 @@ use List::Util qw(min max);
 use App::Model::Session;
 
 my $events = App::Model::Event->new();
+my $activities = App::Model::Activity->new();
 my $sessions = App::Model::Session->new();
 my $json = JSON::XS->new->ascii->pretty->allow_nonref->allow_blessed;
 
@@ -31,7 +32,7 @@ sub to_app {
             my $conn = shift; ## Plack::App::WebSocket::Connection object
             my $env = shift;  ## PSGI env
             my $w;
-            my $cookies = {map { split(/=/, $_) } split(/;\s*/, $env->{HTTP_COOKIE} || '')};
+            my $cookies = {map { split(/=/xsm) } split(/;\s*/xsm, $env->{HTTP_COOKIE} || '')};
             my $session;
             #my $cursor;
 
@@ -54,6 +55,7 @@ sub to_app {
                 message => sub {
                     my ($connection, $msg) = @_;
                     my $dat = decode_json($msg);
+                    my $act;
                     say STDERR "WebSocket message:";
                     #p($msg);
                     p($dat);
@@ -61,12 +63,7 @@ sub to_app {
                     my $resp = {};
                     
                     if ($dat->{action}) {
-                        if ($dat->{action} eq 'reveal') {
-                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'reveal', {
-                                row => $dat->{payload}->{row},
-                                col => $dat->{payload}->{col},
-                            });
-                        } elsif ($dat->{action} eq 'subscribe') {
+                        if ($dat->{action} eq 'subscribe') {
                             say STDERR "Subscribing to " . $dat->{activity_id};
                             $resp->{msg} = 'subscribed';
                             my $seconds = 0.1;
@@ -89,8 +86,23 @@ sub to_app {
                                     #print STDERR '.';
                                 }
                             });
+                        } elsif ($dat->{action} eq 'reveal') {
+                            $activities->set_phase($dat->{activity_id}, 'reveal', $dat->{payload});
+                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'reveal', {
+                                row => $dat->{payload}->{row},
+                                col => $dat->{payload}->{col},
+                            });
                         } elsif ($dat->{action} eq 'buzz') {
-                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'buzz', {user_id => $session->{data}->{user}->{_id}->value});
+                            $act = $activities->get($dat->{activity_id});
+                            say STDERR "Buzz for:";
+                            p($act);
+                            if ($act->{state}->{phase} eq 'reveal') {
+                                $activities->set_phase($dat->{activity_id}, 'answering', {user_id => $session->{data}->{user}->{_id}->value});
+                                $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'buzz', $session->{data}->{user});
+                            } else {
+                                $resp->{msg} = 'Not in reveal state!';
+                            }
+                            
                         } else {
                             say STDERR "Unknown WebSocket Action: " .  $dat->{action};
                         }

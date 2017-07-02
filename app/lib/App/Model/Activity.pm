@@ -27,5 +27,16 @@ sub load_related {
 	return $user;
 }
 
+sub set_phase {
+	my ($self, $activity_id, $phase, $meta) = @_;
+
+	if (!$meta) { $meta = {}; }
+
+
+	$self->save($activity_id, {
+		'state.phase' => $phase, 
+		'state.meta' => $meta
+	});
+}
 
 1;

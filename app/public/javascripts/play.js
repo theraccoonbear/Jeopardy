@@ -5,6 +5,8 @@ var Game = function(opts) {
 	ctxt.options = $.extend({}, opts);
 	ctxt.$answerRevealer = $('#answerRevealer');
 	ctxt.$answerText = ctxt.$answerRevealer.find('h1');
+	ctxt.$statusPane = $('#statusPane');
+	ctxt.$statusText = ctxt.$statusPane.find('h1');
 };
 
 Game.prototype.showAnswer = function(row, col) {
@@ -15,8 +17,22 @@ Game.prototype.showAnswer = function(row, col) {
 	var ans = ctxt.options.answers[row].points[col];
 	console.log('answer:', ans);
 
+	ctxt.$statusPane.css({opacity: 0});
 	ctxt.$answerText.html(ans.answer);
 	ctxt.$answerRevealer.animate({
+		opacity: 1, 
+		left: 0,
+		top: 0,
+		right: 0,
+		bottom: 0
+	}, 1000);
+}
+
+Game.prototype.showStatus = function(msg, opts) {
+	var ctxt = this;
+	ctxt.$answerRevealer.css({opacity: 0});
+	ctxt.$statusText.html(msg);
+	ctxt.$statusPane.animate({
 		opacity: 1, 
 		left: 0,
 		top: 0,
@@ -57,6 +73,15 @@ $(function() {
 			},
 			player_play: function(payload) {
 				console.log('player!', payload);
+				var $player = $playerList.find('li[data-player="' + payload.player.username + '"]');
+				if (!$player.length) {
+					var $newplayer = $('<li data-player="' + payload.player.username + '">' + payload.player.username + '<li>');
+					$playerList.append($newplayer);
+				}
+			},
+			buzz: function(payload) {
+				console.log('Buzz:', payload);
+				ourGame.showStatus(payload.username + ' buzzed');
 			}
 		}
 	});

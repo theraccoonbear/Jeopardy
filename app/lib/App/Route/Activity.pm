@@ -165,7 +165,7 @@ get '/play/:activity_id' => sub {
 	$activity = $activities->load_related($activity);
 	var 'extra_scripts' => ['play.js'];
 
-	$events->emitEvent(session('user')->{_id}, $activity->{_id}, 'player_play', { player_id => session('user')->{_id}});
+	$events->emitEvent(session('user')->{_id}, $activity->{_id}, 'player_play', { player => session('user'), player_id => session('user')->{_id}});
 
 	template 'activity/play', {
 		activity => $activity,
