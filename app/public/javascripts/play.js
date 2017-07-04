@@ -1,10 +1,18 @@
 var socket;
 
-var Game = function(opts) {
+var Game = function(activity) {
 	var ctxt = this;
+	var opts = activity.game;
 	ctxt.options = $.extend({}, opts);
+	ctxt.state = activity.state;
+	ctxt.current = {
+		answer: false,
+		row: false,
+		col: false
+	};
 	ctxt.$answerRevealer = $('#answerRevealer');
-	ctxt.$answerText = ctxt.$answerRevealer.find('h1');
+	ctxt.$answerText = ctxt.$answerRevealer.find('h1.answer');
+	ctxt.$quetionText = ctxt.$answerRevealer.find('h2.question');
 	ctxt.$statusPane = $('#statusPane');
 	ctxt.$statusText = ctxt.$statusPane.find('h1');
 };
@@ -44,24 +52,60 @@ Game.prototype.showNotice = function(msg, opts) {
 	}, 3000)
 };
 
+Game.prototype.hideAnswer = function() {
+	var ctxt = this;
+	ctxt.$answerRevealer.animate({
+		opacity: 0
+	}, 1000, null, function() {
+		if (running) {
+			$buzzerName.html('');
+		} else {
+			$buzzIn.show();
+		}
+		ctxt.$answerRevealer.hide();
+	});
+	
+}
+
+Game.prototype.getAnswerCell = function(row, col) {
+	var $row = $('.jeopardy-board.row:eq(' + (row + 1) + ')');
+	var $cell = $row.find('.point.block:eq(' + col + ')');
+	return $cell;
+}
+
 Game.prototype.showAnswer = function(row, col) {
 	var ctxt = this;
 	var $row = $('.jeopardy-board.row:eq(' + (row + 1) + ')');
 	var $cell = $row.find('.point.block:eq(' + col + ')');
-	$cell.animate({opacity: 0}, 1500);
+	//$cell.animate({opacity: 0}, 1500);
 	var ans = ctxt.options.answers[row].points[col];
+	ctxt.current.answer = ans;
+	ctxt.current.row = row;
+	ctxt.current.col = col;
+	ctxt.current.$cell = $cell;
 	console.log('answer:', ans);
 
 	ctxt.$statusPane.css({opacity: 0});
-	ctxt.$answerText.html(ans.answer);
-	ctxt.$answerRevealer.animate({
-		opacity: 1, 
-		left: 0,
-		top: 0,
-		right: 0,
-		bottom: 0
-	}, 1000);
-}
+	ctxt.$answerText.html('A: ' + ans.answer);
+	ctxt.$quetionText.html(running ? ('Q: ' + ans.question) : '');
+	//console.log($cell.position(), $cell.width(), $cell.height());
+	ctxt.$answerRevealer
+		.css({
+			left: $cell.position().left,
+			top: $cell.position().top,
+			right: $cell.position().left + $cell.width(),
+			botom: $cell.position().top + $cell.height(),
+			opacity: 0
+		}
+		).show()
+		.animate({
+			opacity: 1, 
+			left: 0,
+			top: 0,
+			right: 0,
+			bottom: 0
+		}, 1000);
+};
 
 Game.prototype.showStatus = function(msg, opts) {
 	var ctxt = this;
@@ -74,6 +118,66 @@ Game.prototype.showStatus = function(msg, opts) {
 		right: 0,
 		bottom: 0
 	}, 1000);
+};
+
+Game.prototype.updateState = function(activity) {
+	var ctxt = this;
+
+	var origState = $.extend({}, ctxt.state);
+
+	ctxt.state = activity.state;
+
+	$.each(ctxt.state.players, function(i, p) {
+		var $p = $('li[data-player="' + p.username + '"]');
+		$p.find('.score').html(p.score);
+	});
+
+	if (activity.state) {
+		if (activity.state.phase) {
+			switch (activity.state.phase) {
+				case 'reveal':
+					break;
+				default:
+					console.log("Unknown phase:", activity.state.phase);
+			}
+		}
+	}
+};
+
+Game.prototype.addPlayer = function(player) {
+	var ctxt = this;
+	ctxt.showNotice(player.username + ' is playing now!');
+	console.log('player!', player);
+	var $player = $playerList.find('li[data-player="' + player.username + '"]');
+	if ($player.length < 1) {
+		var $newplayer = $('<li data-player="' + player.username + '"><span class="username">' + player.username + '</span> ($<span class="score"></span>)<li>');
+		$playerList.append($newplayer);
+	}
+};
+
+Game.prototype.getPlayerScore = function(username) {
+	var ctxt = this;
+	var score = false;
+	$.each(ctxt.state.players, function(i, p) {
+		if (p.username === username) {
+			score = p.score;
+		}
+	});
+
+	return score;
+};
+
+Game.prototype.removeAnswer = function(row, col) {
+	var ctxt = this;
+	row = row || ctxt.current.row;
+	col = col|| ctxt.current.col;
+
+	ctxt
+		.getAnswerCell(row, col)
+		.addClass('claimed')
+		.animate({
+			opacity: 0,
+		}, 250);
 }
 
 $(function() {
@@ -104,27 +208,33 @@ $(function() {
 
 	var ES = new EventSocket({
 		url: ws_url,
+		reconnectDelay: reconnectDelay,
 		ready: function() {
 			ES.send(JSON.stringify({
 				action: 'subscribe',
 				activity_id: activity_id
 			}));
 
-			$('.point').on('click', function(e) {
-				var $this = $(this);
-				var col = $this.index();
-				var row = $this.closest('.jeopardy-board.row').index();
-
-				ES.emitEvent('reveal', activity_id, {row: row, col: col});
-			});
-
 			if (running) {
+				$('.point').on('click', function(e) {
+					var $this = $(this);
+					if (!$this.hasClass('claimed')) {
+						var col = $this.index();
+						var row = $this.closest('.jeopardy-board.row').index();
+						ES.emitEvent('reveal', activity_id, {row: row, col: col});
+					}
+				});
+
 				$acceptAnswer.on('click', function(e) {
-					ES.emitEvent('accept_answer', activity_id, {});
+					ES.emitEvent('accept_answer', activity_id, {current: ourGame.current});
 				});
 
 				$wrongAnswer.on('click', function(e) {
-					ES.emitEvent('wrong_answer', activity_id, {});
+					ES.emitEvent('wrong_answer', activity_id, {current: ourGame.current});
+				});
+
+				$dismissAnswer.on('click', function(e) {
+					ES.emitEvent('dismiss_answer', activity_id, {current: ourGame.current});
 				});
 			} else {
 				$buzzIn.on('click', function(e) {
@@ -133,24 +243,42 @@ $(function() {
 			}
 		},
 		on: {
+			beforeAction: function(payload) {
+				if (payload.data.activity) {
+					ourGame.updateState(payload.data.activity);
+				}
+			},
 			reveal: function(payload) {
 				if (running) { $playerBuzzed.addClass('hidden'); }
 				ourGame.showAnswer(payload.row, payload.col)
 			},
 			player_play: function(payload) {
-				console.log('player!', payload);
-				var $player = $playerList.find('li[data-player="' + payload.player.username + '"]');
-				ourGame.showNotice(payload.player.username + ' is playing now!');
-				if (!$player.length) {
-					var $newplayer = $('<li data-player="' + payload.player.username + '">' + payload.player.username + '<li>');
-					$playerList.append($newplayer);
+				ourGame.addPlayer(payload.player);
+			},
+			accept_answer: function(payload) {
+				console.log('accept_answer', payload);
+				ourGame.showNotice(payload.user.username + ' awarded ' + payload.current.answer.value + '. New score $' + ourGame.getPlayerScore(payload.user.username), {type: 'success'});
+				ourGame.hideAnswer();
+				ourGame.removeAnswer();
+			},
+			wrong_answer: function(payload) {
+				console.log('wrong_answer', payload);
+				ourGame.showNotice(payload.user.username + ' was wrong', {type: 'danger'});
+				if (running) {
+					$playerBuzzed.addClass('hidden');
+				} else {
+					$buzzIn.show();
 				}
+			},
+			dismiss_answer: function(payload) {
+				ourGame.hideAnswer();
 			},
 			buzz: function(payload) {
 				console.log('Buzz:', payload);
-				ourGame.showNotice(payload.username + ' buzzed');
+				ourGame.showNotice(payload.user.username + ' buzzed');
+				ourGame.current.user = payload.user;
 				if (running) {
-					$buzzerName.html(payload.username);
+					$buzzerName.html(payload.user.username);
 					$playerBuzzed.removeClass('hidden');
 				} else {
 					$buzzIn.hide();

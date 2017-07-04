@@ -32,13 +32,56 @@ sub set_phase {
 
 	if (!$meta) { $meta = {}; }
 
-
-	$self->save($activity_id, {
+	my $data = {
 		'state.phase' => $phase, 
 		'state.meta' => $meta
-	});
+	};
+
+
+	if ($meta->{user}) {
+		$data->{'state.active_player'} = $meta->{user};
+	}
+
+	$self->save($activity_id, $data);
 
 	return;
+}
+
+sub claim_answer {
+	my ($self, $activity_id, $player, $row, $col) = @_;
+	
+	# $act->{state}->{players} = [
+	# 	map {
+	# 		if ($_->{username} eq $player->{username}) {
+	# 			$_->{score} += $score;
+	# 		}
+	# 		$_;
+	# 	}
+	# 	@{ $act->{state}->{players} }
+	# ];
+	my $update = {
+		'state.claims.' . $row . q{.} . $col . '.user' => $player->{username}
+	};
+
+	p($activity_id);
+	p($update);
+	return $self->save($activity_id, $update);
+}
+
+sub award_score {
+	my ($self, $activity_id, $player, $score) = @_;
+	my $act = $self->get($activity_id);
+	$act->{state}->{players} = [
+		map {
+			if ($_->{username} eq $player->{username}) {
+				$_->{score} += $score;
+			}
+			$_;
+		}
+		@{ $act->{state}->{players} }
+	];
+
+	return $self->save($activity_id, { 'state.players' => $act->{state}->{players}});
 }
 
 1;

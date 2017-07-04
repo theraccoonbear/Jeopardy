@@ -7,4 +7,4 @@ WORKDIR /opt/src
 
 EXPOSE 5000
 
-CMD /opt/src/util/run
+CMD /opt/src/build/run

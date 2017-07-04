@@ -55,8 +55,9 @@ EventSocket.prototype.connect = function(url) {
 	ctxt._socket.onmessage = function(e) {
 		var data = JSON.parse(e.data);
 		console.log('data:', data);
-		if (data.payload) {
-			$.each(data.payload, function(i, ev) {
+		if (data.payload && data.payload.events) {
+			$.each(data.payload.events, function(i, ev) {
+				ctxt._dispatch('beforeAction', { action: ev.action, data: ev.data});
 				if (typeof ev.action !== 'undefined') {
 					ctxt._dispatch(ev.action, ev.data);
 				}

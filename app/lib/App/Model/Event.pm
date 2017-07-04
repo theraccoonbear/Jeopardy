@@ -41,7 +41,7 @@ sub emitEvent {
 	my ($self, $user_id, $activity_id, $action, $data) = @_;
 
 	$action =~ s/[^A-Za-z_]+/_/xsm;
-
+	$data->{activity} = $activities->get($activity_id);
 	my $event = {
 		user_id => $self->oid($user_id),
 		activity_id => $self->oid($activity_id),

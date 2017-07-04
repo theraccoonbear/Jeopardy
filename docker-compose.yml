@@ -18,7 +18,7 @@ services:
       - app
     links:
       - 'jeopardy-mongodb:jeopardy-mongodb'
-    entrypoint: /opt/src/util/run
+    entrypoint: /opt/src/build/run
     depends_on:
       - jeopardy-mongodb
 

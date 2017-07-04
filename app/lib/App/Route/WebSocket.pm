@@ -16,7 +16,7 @@ use App::Model::Session;
 my $events = App::Model::Event->new();
 my $activities = App::Model::Activity->new();
 my $sessions = App::Model::Session->new();
-my $json = JSON::XS->new->ascii->pretty->allow_nonref->allow_blessed;
+my $json = JSON::XS->new->ascii->pretty->allow_nonref->allow_blessed->convert_blessed;
 
 sub to_app {
     return Plack::App::WebSocket->new(
@@ -34,18 +34,24 @@ sub to_app {
             my $w;
             my $cookies = {map { split(/=/xsm) } split(/;\s*/xsm, $env->{HTTP_COOKIE} || '')};
             my $session;
+            my $user;
+            
             #my $cursor;
 
-            say STDERR "Cookies:";
-            p($cookies);
+            #say STDERR "Cookies:";
+            #p($cookies);
 
             say STDERR "WebSocket connecting...";
             if ($cookies->{'dancer.session'}) {
-                say STDERR "Getting session...";
+                say STDERR "Getting session " . $cookies->{'dancer.session'} . "...";
                 $session = $sessions->get($cookies->{'dancer.session'});
-                say STDERR "Session:";
-                p($session);
+                $user = $session->{data}->{user};
+                #say STDERR "Session:";
+                #p($session);
             }
+
+            
+
             # if (!$session) {
             #     $conn->close();
             # }
@@ -56,16 +62,15 @@ sub to_app {
                     my ($connection, $msg) = @_;
                     my $dat = decode_json($msg);
                     my $act;
-                    say STDERR "WebSocket message:";
-                    #p($msg);
-                    p($dat);
 
                     my $resp = {};
                     
                     if ($dat->{action}) {
+                        say STDERR "WebSocket message: '" . $dat->{action} . "' from '" . $user->{username} . "'";
+                        #p($dat);
                         $act = $activities->get($dat->{activity_id});
                         if ($dat->{action} eq 'subscribe') {
-                            say STDERR "Subscribing to " . $dat->{activity_id};
+                            say STDERR "Subscribing to activity " . $dat->{activity_id};
                             $resp->{msg} = 'subscribed';
                             my $seconds = 0.1;
                             my $last_event = time;
@@ -73,10 +78,11 @@ sub to_app {
                                 my $new_events = $events->find({timestamp => { '$gt' => $last_event }});
 
                                 if (scalar @{$new_events} > 0) {
-                                    my $cnt = scalar @$new_events;
-                                    say STDERR "$cnt events";
                                     $connection->send($json->encode({
-                                        payload => $new_events,
+                                        payload => {
+                                            events => $new_events,
+                                            activity => $activities->get($dat->{activity_id})
+                                        },
                                         now => time
                                     }));
                                     my $old_last = $last_event;
@@ -88,39 +94,49 @@ sub to_app {
                                 }
                             });
                         } elsif ($dat->{action} eq 'reveal') {
+                            say STDERR "Revealing " .  $dat->{payload}->{row} . ', ' . $dat->{payload}->{col};
                             $activities->set_phase($dat->{activity_id}, 'reveal', $dat->{payload});
-                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'reveal', {
-                                row => $dat->{payload}->{row},
-                                col => $dat->{payload}->{col},
-                            });
+                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'reveal', $dat->{payload});
                         } elsif ($dat->{action} eq 'buzz') {
-                            #$act = $activities->get($dat->{activity_id});
-                            say STDERR "Buzz for:";
-                            p($act);
                             if ($act->{state}->{phase} eq 'reveal') {
-                                $activities->set_phase($dat->{activity_id}, 'answering', {user_id => $session->{data}->{user}->{_id}->value});
-                                $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'buzz', $session->{data}->{user});
+                                say STDERR "Buzz from " . $session->{data}->{user}->{username};
+                                $activities->set_phase($dat->{activity_id}, 'answering', {user => $session->{data}->{user}});
+                                $dat->{payload}->{user} = $session->{data}->{user};
+                                $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'buzz', $dat->{payload});
                             } else {
+                                say STDERR "Can't buzz in during " . $act->{state}->{phase};
                                 $resp->{msg} = 'Not in reveal state!';
                             }
-                            
                         } elsif ($dat->{action} eq 'accept_answer') {
                             if ($act->{state}->{phase} eq 'answering') {
-                                $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'accept_answer', $session->{data}->{user});
+                                $activities->set_phase($dat->{activity_id}, 'choosing', {});
+                                $activities->award_score($dat->{activity_id}, $dat->{payload}->{current}->{user}, $dat->{payload}->{current}->{answer}->{value});
+                                $activities->claim_answer($dat->{activity_id}, $dat->{payload}->{current}->{user}, $dat->{payload}->{current}->{row}, $dat->{payload}->{current}->{col});
+                                $dat->{payload}->{user} = $dat->{payload}->{current}->{user};
+                                $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'accept_answer', $dat->{payload});
                             } else {
                                 $resp->{msg} = 'Not in answering state!';
                             }
                         } elsif ($dat->{action} eq 'wrong_answer') {
                             if ($act->{state}->{phase} eq 'answering') {
-                                $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'wrong_answer', $session->{data}->{user});
+                                $dat->{payload}->{user} = $dat->{payload}->{current}->{user};
+                                $activities->set_phase($dat->{activity_id}, 'reveal', {
+                                    row => $dat->{payload}->{current}->{row},
+                                    col => $dat->{payload}->{current}->{col}
+                                }); #$dat->{payload});
+                                $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'wrong_answer', $dat->{payload});
                             } else {
                                 $resp->{msg} = 'Not in answering state!';
                             }
+                        } elsif ($dat->{action} eq 'dismiss_answer') {
+                            $activities->set_phase($dat->{activity_id}, 'choosing', {});
+                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'dismiss_answer', $dat->{payload});
                         } else {
                             say STDERR "Unknown WebSocket Action: " .  $dat->{action};
                         }
                     }
                     if ($resp->{msg}) {
+                        $resp->{activity} = $activities->get($dat->{activity_id});
                         $resp->{now} = time;
                         $connection->send($json->encode($resp));
                     }

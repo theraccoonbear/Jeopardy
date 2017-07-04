@@ -1,34 +1,45 @@
 [% USE JSON ( pretty => 1, allow_blessed => 1 ) %]
 
+<div class="game-area[% IF running %] runner[% END %]">
 [% INCLUDE part/game_board.tt game => activity.game %]
+</div>
 
 <ul class="notices" id="notices"></ul>
 
-<ul id="playerList">
+<ul id="playerList" class="player-list">
 	[% FOREACH player IN activity.state.players %]
-	<li data-player="[% player.username %]">[% player.username %]</li>
+	<li data-player="[% player.username %]"><span class="username">[% player.username %]</span> ($<span class="score">[% player.score %]</span>)</li>
 	[% END %]
 </ul>
 
 <div class="overlay-pane" id="answerRevealer">
-	<h1></h1>
+	<h1 class="answer"></h1>
+	<h2 class="question"></h1>
 	
 	[% IF running %]
 	<div id="playerBuzzed" class="hidden">
 		<strong><span id="buzzerName"></span> Buzzed!</strong>
 		<div class="row">
 			<div class="col-md-6">
-				<button type="button" id="acceptAnswer" class="btn btn-success btn-block btn-lg">Accept</button>
+				<button type="button" id="acceptAnswer" class="btn btn-success btn-block btn-lg"><span class="glyphicon glyphicon-ok"></span> Correct</button>
 			</div>
 			<div class="col-md-6">
-				<button type="button" id="wrongAnswer" class="btn btn-danger btn-block btn-lg">Wrong</button>
+				<button type="button" id="wrongAnswer" class="btn btn-danger btn-block btn-lg"><span class="glyphicon glyphicon-remove"></span>Wrong</button>
 			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6">
+			<button type="button" id="killAnswer" class="btn btn-danger btn-block btn-lg"><span class="glyphicon glyphicon-trash"></span> Kill</button>
+		</div>
+		<div class="col-md-6">
+			<button type="button" id="dismissAnswer" class="btn btn-warning btn-block btn-lg"><span class="glyphicon glyphicon-download-alt"></span> Dismiss</button>
 		</div>
 	</div>
 	[% ELSE %]
 	<div class="row">
 		<div class="col-md-12">
-			<button type="button" id="buzzIn" class="btn btn-danger btn-block btn-lg">Buzz In!</button>
+			<button type="button" id="buzzIn" class="btn btn-danger btn-block btn-lg btn-buzz-in">Buzz In!</button>
 		</div>
 	</div>
 	[% END %]
@@ -39,7 +50,7 @@
 </div>
 
 <script>
-	var game = [% activity.game.json %];
+	var game = [% activity.json %];
 	var activity_id = '[% activity_id %]';
 	var running = !!'[% running %]';
 </script>

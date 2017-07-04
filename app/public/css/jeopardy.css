@@ -17,6 +17,23 @@ body {
 	font-size: 1.6em;
 }
 
+.game-area.runner .point {
+	border: 2px solid #060CE9;
+}
+.game-area.runner .point:hover {
+	border: 2px solid #ffc90e;
+	cursor: pointer;
+}
+
+
+.game-area.runner .point.claimed {
+	opacity: 0;
+}
+.game-area.runner .point.claimed:hover {
+	border: 2px solid #060CE9;
+	cursor: default;
+}
+
 .jeopardy-board {
 	color: #ffc90e;
 	background-color: #060CE9;
@@ -54,9 +71,16 @@ body {
 
 .overlay-pane h1 {
 	margin-top: 150px;
+}
+
+.overlay-pane h1, .overlay-pane h2 {
 	color: #ffc90e;
 	text-shadow: -2px 2px 3px rgba(0, 0, 0, 1);
 	font-size: 36px;
+}
+
+.overlay-pane h2 {
+	font-size: 28px;
 }
 
 .notices {
@@ -70,4 +94,12 @@ body {
 
 .hidden {
 	display: none;
+}
+
+.player-list li {
+	color: #000;
+}
+
+.btn-buzz-in {
+	min-height: 250px;
 }

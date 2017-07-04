@@ -94,12 +94,13 @@ sub save {
 	return $coll->update_one($self->_cond($cond), {'$set' => $obj});
 }
 
+
 sub get {
 	my ($self, $cond) = @_;
 	
 	my $c = $self->_cond($cond);
-	say STDERR $self->model_name . "->get() Condition:";
-	p($c);
+	#say STDERR $self->model_name . "->get() Condition:";
+	#p($c);
 	my $coll = $self->collection();
 	return $coll->find_one($c);
 }
