@@ -6,6 +6,8 @@ our $VERSION = 0.1;
 
 use Moo;
 
+use boolean;
+
 extends 'App::Model';
 
 #use App::Auth;
@@ -57,18 +59,27 @@ sub add {
 		
 	} (1..6)];
 
+	my $dd_row = int(rand(5)) + 1;
+	my $dd_col = int(rand(6)) + 1;
+
+	say STDERR "Daily double @ $dd_row, $dd_col";
+
 	$game->{answers} = $game->{answers} // [map {
 		my $outer_cnt = $_;
 		{points => [map {
+			my $inner_cnt = $_;
 			my $value = $outer_cnt * 200;
 			{
 				value => $value,
 				answer => "\$$value Answer for Category $_.",
-				question => "\$$value Question for Category $_?"
+				question => "\$$value Question for Category $_?",
+				daily_double => (($dd_row == $outer_cnt && $dd_col == $inner_cnt) ? true : false)
 			}
 		} (1..6)]};
 	} (1..5)];
 	my $coll = $self->collection();
+
+	
 
 	return $coll->insert_one($game);
 }

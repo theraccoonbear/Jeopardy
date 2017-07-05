@@ -15,6 +15,9 @@ var Game = function(activity) {
 	ctxt.$quetionText = ctxt.$answerRevealer.find('h2.question');
 	ctxt.$statusPane = $('#statusPane');
 	ctxt.$statusText = ctxt.$statusPane.find('h1');
+	ctxt.$wagerPane = $('#wagerPane');
+	ctxt.$wagerAmount = $('#wagerAmount');
+	ctxt.$wagerSubmit = $('#wagerSubmit');
 };
 
 Game.prototype.showNotice = function(msg, opts) {
@@ -64,7 +67,6 @@ Game.prototype.hideAnswer = function() {
 		}
 		ctxt.$answerRevealer.hide();
 	});
-	
 }
 
 Game.prototype.getAnswerCell = function(row, col) {
@@ -72,6 +74,12 @@ Game.prototype.getAnswerCell = function(row, col) {
 	var $cell = $row.find('.point.block:eq(' + col + ')');
 	return $cell;
 }
+
+Game.prototype.setCurrent = function(row, col) {
+	var ctxt = this;
+	ctxt.current.row = row;
+	ctxt.current.col = col;
+};
 
 Game.prototype.showAnswer = function(row, col) {
 	var ctxt = this;
@@ -178,6 +186,30 @@ Game.prototype.removeAnswer = function(row, col) {
 		.animate({
 			opacity: 0,
 		}, 250);
+};
+
+Game.prototype.getDailyDoubleWager = function(cb) {
+	var ctxt = this;
+
+	ctxt.$wagerPane.animate({
+		opacity: 1, 
+		left: 0,
+		top: 0,
+		right: 0,
+		bottom: 0
+	}, 1000);
+};
+
+Game.prototype.hideDailyDoubleWager = function() {
+	var ctxt = this;
+	ctxt.$wagerPane.animate({
+		opacity: 0
+	}, 250, null, function() {
+		if (!running) {
+			ctxt.$wagerPane.hide();
+		}
+		
+	});
 }
 
 $(function() {
@@ -221,7 +253,12 @@ $(function() {
 					if (!$this.hasClass('claimed')) {
 						var col = $this.index();
 						var row = $this.closest('.jeopardy-board.row').index();
-						ES.emitEvent('reveal', activity_id, {row: row, col: col});
+
+						if ($this.hasClass('daily-double')) {
+							ES.emitEvent('daily_double', activity_id, {row: row, col: col});
+						} else {
+							ES.emitEvent('reveal', activity_id, {row: row, col: col});
+						}
 					}
 				});
 
@@ -236,9 +273,36 @@ $(function() {
 				$dismissAnswer.on('click', function(e) {
 					ES.emitEvent('dismiss_answer', activity_id, {current: ourGame.current});
 				});
+
+				$killAnswer.on('click', function(e) {
+					ES.emitEvent('kill_answer', activity_id, {current: ourGame.current});
+				});
 			} else {
 				$buzzIn.on('click', function(e) {
 					ES.emitEvent('buzz', activity_id, {});
+				});
+
+				$wagerSubmit.on('click', function(e) {
+					if (!$wagerAmount.closest('div').hasClass('has-error')) {
+						ourGame.hideDailyDoubleWager();
+						ES.emitEvent('wager', activity_id, { 
+							current: ourGame.current, 
+							row: ourGame.current.row,
+							col: ourGame.current.col,
+							wager: $wagerAmount.val()
+						});
+					}
+				});
+
+				$wagerAmount.on('keypress', function(e) {
+					var $this = $(this);
+					var $div = $this.closest('div');
+					var val = $this.val();
+					if (!val || val < 0) {
+						$div.addClass('has-error');
+					} else {
+						$div.removeClass('has-error');
+					}
 				});
 			}
 		},
@@ -248,16 +312,24 @@ $(function() {
 					ourGame.updateState(payload.data.activity);
 				}
 			},
+			daily_double: function(payload) {
+				console.log('daily_double', payload);
+				console.log(payload.activity.state.active_player.username, username);
+				ourGame.setCurrent(payload.row, payload.col);
+				if (payload.activity.state.active_player.username === username) {
+					ourGame.getDailyDoubleWager();
+				}
+			},
 			reveal: function(payload) {
 				if (running) { $playerBuzzed.addClass('hidden'); }
-				ourGame.showAnswer(payload.row, payload.col)
+				ourGame.showAnswer(payload.row, payload.col);
 			},
 			player_play: function(payload) {
 				ourGame.addPlayer(payload.player);
 			},
 			accept_answer: function(payload) {
 				console.log('accept_answer', payload);
-				ourGame.showNotice(payload.user.username + ' awarded ' + payload.current.answer.value + '. New score $' + ourGame.getPlayerScore(payload.user.username), {type: 'success'});
+				ourGame.showNotice(payload.user.username + ' was correct.  Awarded $' + payload.current.answer.value + '. New score $' + ourGame.getPlayerScore(payload.user.username), {type: 'success'});
 				ourGame.hideAnswer();
 				ourGame.removeAnswer();
 			},
@@ -272,6 +344,10 @@ $(function() {
 			},
 			dismiss_answer: function(payload) {
 				ourGame.hideAnswer();
+			},
+			kill_answer: function(payload) {
+				ourGame.hideAnswer();
+				ourGame.removeAnswer();
 			},
 			buzz: function(payload) {
 				console.log('Buzz:', payload);

@@ -8,7 +8,7 @@
 	[% FOREACH cat IN game.answers %]
 	<div class="jeopardy-board row">
 		[% FOREACH answer IN cat.points %]
-		<div class="point block col-xs-2"><span>$[% answer.value %]</span></div>
+		<div class="point block col-xs-2[% IF answer.daily_double %] daily-double[% END %]"><span>$[% answer.value %]</span></div>
 		[% END %]
 	</div>
 	[% END %]

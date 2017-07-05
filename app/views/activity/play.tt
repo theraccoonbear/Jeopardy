@@ -49,8 +49,23 @@
 	<h1></h1>
 </div>
 
+<div class="overlay-pane" id="wagerPane">
+	<div class="row">
+		<div class="col-md-3 col-sm-6">
+			<h1>Wager?</h1>
+		</div>
+		<div class="col-md-6 col-sm-6">
+			<input type="number" id="wagerAmount" class="form-control">
+		</div>
+		<div class="col-md-3 col-sm-12">
+			<button type="button" id="wagerSubmit" class="btn btn-success btn-block btn-lg">OK</button>
+		</div>
+	</div>
+</div>
+
 <script>
 	var game = [% activity.json %];
 	var activity_id = '[% activity_id %]';
 	var running = !!'[% running %]';
+	var username = '[% vars.username %]';
 </script>

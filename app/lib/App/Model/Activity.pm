@@ -50,21 +50,9 @@ sub set_phase {
 sub claim_answer {
 	my ($self, $activity_id, $player, $row, $col) = @_;
 	
-	# $act->{state}->{players} = [
-	# 	map {
-	# 		if ($_->{username} eq $player->{username}) {
-	# 			$_->{score} += $score;
-	# 		}
-	# 		$_;
-	# 	}
-	# 	@{ $act->{state}->{players} }
-	# ];
 	my $update = {
-		'state.claims.' . $row . q{.} . $col . '.user' => $player->{username}
+		'state.claims.' . $row . q{.} . $col => $player->{username}
 	};
-
-	p($activity_id);
-	p($update);
 	return $self->save($activity_id, $update);
 }
 

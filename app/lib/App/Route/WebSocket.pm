@@ -12,6 +12,7 @@ use Data::Printer;
 use JSON::XS;
 use List::Util qw(min max);
 use App::Model::Session;
+use boolean;
 
 my $events = App::Model::Event->new();
 my $activities = App::Model::Activity->new();
@@ -97,6 +98,9 @@ sub to_app {
                             say STDERR "Revealing " .  $dat->{payload}->{row} . ', ' . $dat->{payload}->{col};
                             $activities->set_phase($dat->{activity_id}, 'reveal', $dat->{payload});
                             $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'reveal', $dat->{payload});
+                        } elsif ($dat->{action} eq 'daily_double') {
+                            say STDERR "Daily Double! " .  $dat->{payload}->{row} . ', ' . $dat->{payload}->{col};
+                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'daily_double', $dat->{payload});
                         } elsif ($dat->{action} eq 'buzz') {
                             if ($act->{state}->{phase} eq 'reveal') {
                                 say STDERR "Buzz from " . $session->{data}->{user}->{username};
@@ -129,9 +133,20 @@ sub to_app {
                                 $resp->{msg} = 'Not in answering state!';
                             }
                         } elsif ($dat->{action} eq 'dismiss_answer') {
-                            $activities->set_phase($dat->{activity_id}, 'choosing', {});
+                            $activities->set_phase($dat->{activity_id}, 'choosing', { x => 1 });
                             $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'dismiss_answer', $dat->{payload});
+                        } elsif ($dat->{action} eq 'kill_answer') {
+                            $dat->{payload}->{current}->{user} = { username => false };
+                            $activities->claim_answer($dat->{activity_id}, $dat->{payload}->{current}->{user}, $dat->{payload}->{current}->{row}, $dat->{payload}->{current}->{col});
+                            
+                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'kill_answer', $dat->{payload});
+                        } elsif ($dat->{action} eq 'wager') {
+                            p($dat);
+                            say STDERR 'Wagered $' . $dat->{payload}->{wager} . '. Revealing ' .  $dat->{payload}->{row} . ', ' . $dat->{payload}->{col};
+                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'reveal', $dat->{payload});
+                            $activities->set_phase($dat->{activity_id}, 'reveal', $dat->{payload});
                         } else {
+                            p($dat->{payload});
                             say STDERR "Unknown WebSocket Action: " .  $dat->{action};
                         }
                     }
