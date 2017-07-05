@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 cd /opt/src
-./util/git-setup
-./util/install-modules
+./build/git-setup
+./buikdutil/install-modules
 
 #perl -I /opt/src/modules/lib/perl5 /opt/src/modules/bin/plackup -R /opt/src/app/bin,/opt/src/app/lib -r /opt/src/app/bin/app.psgi
 #/opt/src/modules/bin/plackup -R /opt/src/app/bin,/opt/src/app/lib -r /opt/src/app/bin/app.psgi
-PLACKUP=`which plackup` || /opt/src/modules/bin/plackup
+PLACKUP=/opt/src/modules/bin/plackup
 PERL_MONGO_NO_DEP_WARNINGS=1 perl -I /opt/src/modules/lib/perl5 $PLACKUP --server Twiggy -R /opt/src/app/bin,/opt/src/app/lib -r /opt/src/app/bin/app.psgi
