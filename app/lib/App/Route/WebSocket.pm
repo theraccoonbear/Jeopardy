@@ -73,6 +73,16 @@ sub to_app {
                         if ($dat->{action} eq 'subscribe') {
                             say STDERR "Subscribing to activity " . $dat->{activity_id};
                             $resp->{msg} = 'subscribed';
+                            # todo emit event with recipient specified
+                            $resp->{payload} = {
+                                events => [{
+                                    action => 'subscribed',
+                                    who => $user,
+                                    data => {
+                                        activity => $activities->get($dat->{activity_id})
+                                    }
+                                }]
+                            };
                             my $seconds = 0.1;
                             my $last_event = time;
                             $w = AnyEvent->timer(after => 0, interval => $seconds, cb => sub {

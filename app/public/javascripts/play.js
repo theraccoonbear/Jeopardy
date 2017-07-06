@@ -140,6 +140,16 @@ Game.prototype.updateState = function(activity) {
 		$p.find('.score').html(p.score);
 	});
 
+	$.each(ctxt.state.claims, function(ri, r) {
+		$.each(r, function(ci, c) {
+			console.log(c);
+			if (c !== null) {
+				console.log(ri, ci);
+				ctxt.removeAnswer(ri, ci);
+			}
+		});
+	});
+
 	if (activity.state) {
 		if (activity.state.phase) {
 			switch (activity.state.phase) {
@@ -175,17 +185,20 @@ Game.prototype.getPlayerScore = function(username) {
 	return score;
 };
 
-Game.prototype.removeAnswer = function(row, col) {
+Game.prototype.removeAnswer = function(row, col, opts) {
 	var ctxt = this;
 	row = row || ctxt.current.row;
 	col = col|| ctxt.current.col;
+	opts = $.extend({}, opts, {
+		immediate: false
+	});
 
 	ctxt
 		.getAnswerCell(row, col)
 		.addClass('claimed')
 		.animate({
 			opacity: 0,
-		}, 250);
+		}, opts.immediate ? 0 : 250);
 };
 
 Game.prototype.getDailyDoubleWager = function(cb) {
