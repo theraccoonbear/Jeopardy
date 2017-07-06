@@ -16,8 +16,12 @@ var Game = function(activity) {
 	ctxt.$statusPane = $('#statusPane');
 	ctxt.$statusText = ctxt.$statusPane.find('h1');
 	ctxt.$wagerPane = $('#wagerPane');
+	ctxt.$wagerType = $('#wagerType');
 	ctxt.$wagerAmount = $('#wagerAmount');
 	ctxt.$wagerSubmit = $('#wagerSubmit');
+	ctxt.$playerBuzzed = $('#playerBuzzed');
+	ctxt.$buzzerName = $('#buzzerName');
+	ctxt.$buzzIn = $('#buzzIn');
 };
 
 Game.prototype.showNotice = function(msg, opts) {
@@ -81,8 +85,14 @@ Game.prototype.setCurrent = function(row, col) {
 	ctxt.current.col = col;
 };
 
-Game.prototype.showAnswer = function(row, col) {
+Game.prototype.showAnswer = function(row, col, options) {
 	var ctxt = this;
+
+	var opts = $.extend({
+		answering: false,
+		immediate: false
+	}, options);
+
 	var $row = $('.jeopardy-board.row:eq(' + (row + 1) + ')');
 	var $cell = $row.find('.point.block:eq(' + col + ')');
 	//$cell.animate({opacity: 0}, 1500);
@@ -112,7 +122,11 @@ Game.prototype.showAnswer = function(row, col) {
 			top: 0,
 			right: 0,
 			bottom: 0
-		}, 1000);
+		}, opts.immediate ? 0 : 1000, function() {
+			if (opts.answering) {
+				ctxt.playerBuzzed(opts.answering);
+			}
+		});
 };
 
 Game.prototype.showStatus = function(msg, opts) {
@@ -137,15 +151,13 @@ Game.prototype.updateState = function(activity) {
 
 	$.each(ctxt.state.players, function(i, p) {
 		var $p = $('li[data-player="' + p.username + '"]');
-		$p.find('.score').html(p.score);
+		$p.find('.score').html(1 * p.score);
 	});
 
 	$.each(ctxt.state.claims, function(ri, r) {
 		$.each(r, function(ci, c) {
-			console.log(c);
 			if (c !== null) {
-				console.log(ri, ci);
-				ctxt.removeAnswer(ri, ci);
+				ctxt.removeAnswer(ri, ci, { immediate: true });
 			}
 		});
 	});
@@ -154,6 +166,18 @@ Game.prototype.updateState = function(activity) {
 		if (activity.state.phase) {
 			switch (activity.state.phase) {
 				case 'reveal':
+					if (ctxt.state.phase !== activity.state.phase ||
+						ctxt.current.row !== activity.state.meta.row ||
+						ctxt.current.col !== activity.state.meta.col) {
+							console.log('reveal:', activity.state);
+							ctxt.showAnswer(activity.state.meta.row, activity.state.meta.col, { immediate: true });
+						}
+					break;
+				case 'answering':
+					console.log('answering:', activity.state);
+					ctxt.showAnswer(activity.state.meta.row, activity.state.meta.col, { answering: activity.state.meta.user, immediate: true });
+					break;
+				case 'choosing':
 					break;
 				default:
 					console.log("Unknown phase:", activity.state.phase);
@@ -204,6 +228,8 @@ Game.prototype.removeAnswer = function(row, col, opts) {
 Game.prototype.getDailyDoubleWager = function(cb) {
 	var ctxt = this;
 
+	ctxt.$wagerType.html('Daily Double');
+
 	ctxt.$wagerPane.animate({
 		opacity: 1, 
 		left: 0,
@@ -223,7 +249,19 @@ Game.prototype.hideDailyDoubleWager = function() {
 		}
 		
 	});
-}
+};
+
+Game.prototype.playerBuzzed = function(user) {
+	var ctxt = this;
+	ctxt.showNotice(user.username + ' buzzed');
+	ctxt.current.user = user;
+	if (running) {
+		ctxt.$buzzerName.html(user.username);
+		ctxt.$playerBuzzed.removeClass('hidden');
+	} else {
+		ctxt.$buzzIn.hide();
+	}
+};
 
 $(function() {
 	var ws_url = "ws://" + document.location.hostname + ":5000/websocket/";
@@ -292,7 +330,7 @@ $(function() {
 				});
 			} else {
 				$buzzIn.on('click', function(e) {
-					ES.emitEvent('buzz', activity_id, {});
+					ES.emitEvent('buzz', activity_id, {current: ourGame.current});
 				});
 
 				$wagerSubmit.on('click', function(e) {
@@ -364,14 +402,14 @@ $(function() {
 			},
 			buzz: function(payload) {
 				console.log('Buzz:', payload);
-				ourGame.showNotice(payload.user.username + ' buzzed');
-				ourGame.current.user = payload.user;
-				if (running) {
-					$buzzerName.html(payload.user.username);
-					$playerBuzzed.removeClass('hidden');
-				} else {
-					$buzzIn.hide();
-				}
+				ourGame.playerBuzzed(payload.user);
+				// ourGame.current.user = payload.user;
+				// if (running) {
+				// 	$buzzerName.html(payload.user.username);
+				// 	$playerBuzzed.removeClass('hidden');
+				// } else {
+				// 	$buzzIn.hide();
+				// }
 			},
 			player_running: function(payload) {
 				ourGame.showNotice(payload.player.username + ' is running the game!');

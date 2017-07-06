@@ -114,7 +114,11 @@ sub to_app {
                         } elsif ($dat->{action} eq 'buzz') {
                             if ($act->{state}->{phase} eq 'reveal') {
                                 say STDERR "Buzz from " . $session->{data}->{user}->{username};
-                                $activities->set_phase($dat->{activity_id}, 'answering', {user => $session->{data}->{user}});
+                                $activities->set_phase($dat->{activity_id}, 'answering', {
+                                    user => $session->{data}->{user},
+                                    row => $dat->{payload}->{current}->{row},
+                                    col => $dat->{payload}->{current}->{col}
+                                });
                                 $dat->{payload}->{user} = $session->{data}->{user};
                                 $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'buzz', $dat->{payload});
                             } else {

@@ -52,7 +52,7 @@
 <div class="overlay-pane" id="wagerPane">
 	<div class="row">
 		<div class="col-md-3 col-sm-6">
-			<h1>Wager?</h1>
+			<h1><span id="wagerType"></span> Wager?</h1>
 		</div>
 		<div class="col-md-6 col-sm-6">
 			<input type="number" id="wagerAmount" class="form-control">
