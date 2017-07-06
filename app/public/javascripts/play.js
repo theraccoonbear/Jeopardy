@@ -186,13 +186,19 @@ Game.prototype.updateState = function(activity) {
 	}
 };
 
+Game.prototype.activatePlayer = function(player) {
+	var ctxt = this;
+	$playerList.find('li[data-player]').removeClass('active');
+	$playerList.find('li[data-player="' + player.username + '"]').addClass('active');
+};
+
 Game.prototype.addPlayer = function(player) {
 	var ctxt = this;
 	ctxt.showNotice(player.username + ' is playing now!');
 	console.log('player!', player);
 	var $player = $playerList.find('li[data-player="' + player.username + '"]');
 	if ($player.length < 1) {
-		var $newplayer = $('<li data-player="' + player.username + '"><span class="username">' + player.username + '</span> ($<span class="score"></span>)<li>');
+		var $newplayer = $('<li data-player="' + player.username + '" class="list-inline-item"><span class="username">' + player.username + '</span> ($<span class="score"></span>)</li>');
 		$playerList.append($newplayer);
 	}
 };
@@ -270,6 +276,7 @@ $(function() {
 	var ourGame = new Game(game);
 
 	var $pointBlocks = $('.point.block');
+	
 	var $categoryBlocks = $('.category.block');
 
 	var scaleType = function(e) {
@@ -282,6 +289,10 @@ $(function() {
 			fontSize: Math.round(v / 2) + 'px'
 		});
 		$categoryBlocks.css({
+			fontSize: Math.round(v / 3) + 'px'
+		});
+
+		$playerList.find('li').css({
 			fontSize: Math.round(v / 3) + 'px'
 		});
 	};

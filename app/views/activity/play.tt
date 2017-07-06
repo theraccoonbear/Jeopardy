@@ -6,9 +6,9 @@
 
 <ul class="notices" id="notices"></ul>
 
-<ul id="playerList" class="player-list">
+<ul id="playerList" class="player-list list-inline">
 	[% FOREACH player IN activity.state.players %]
-	<li data-player="[% player.username %]"><span class="username">[% player.username %]</span> ($<span class="score">[% player.score %]</span>)</li>
+	<li data-player="[% player.username %]" class="list-inline-item"><span class="username">[% player.username %]</span> ($<span class="score">[% player.score %]</span>)</li>
 	[% END %]
 </ul>
 
