@@ -9,6 +9,7 @@ services:
       - DBPASS=password
       - DBHOST=jeopardy-mongodb
       - DBPORT=27017
+      - APP_ENV=development # production does --no-test on cpanm module install
     container_name: 'jeopardy-www'
     ports:
       - '5000:5000'

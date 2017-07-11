@@ -55,7 +55,11 @@ get '/edit/:game_id?' => sub {
 	}
 
 	var 'game' => $game;
-	return template 'game/run', {
+	var 'extra_scripts' => ['game.js'];
+
+	p($game);
+	#say STDERR json_encode($game);
+	return template 'game/edit', {
 		game => $game
 	};
 };
@@ -90,6 +94,7 @@ get '/delete/:game_id' => sub {
 	my $game;
 
 	if ($game_id) {
+		# @todo: check if any activities are running these games
 		if ($game_id eq 'all') {
 			$games->remove();
 		} else {
@@ -102,6 +107,25 @@ get '/delete/:game_id' => sub {
 
 	
 	redirect '/game/';
+};
+
+get '/export/:game_id' => sub {
+	my $game_id = route_parameters->get('game_id') ;
+	my $game;
+
+	if ($game_id) {
+		$game = $games->get($game_id);
+	}
+
+	if (!$game) {
+		flash('error' => 'no game found');
+		return redirect '/game/';
+	}
+
+	var 'game' => $game;
+	return template 'game/export', {
+		game => $game
+	};
 };
 
 get '/import' => sub {

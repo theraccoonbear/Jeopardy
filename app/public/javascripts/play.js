@@ -10,9 +10,11 @@ var Game = function(activity) {
 		row: false,
 		col: false
 	};
+	ctxt.$overlayPanes = $('.overlay-pane');
 	ctxt.$answerRevealer = $('#answerRevealer');
 	ctxt.$answerText = ctxt.$answerRevealer.find('h1.answer');
 	ctxt.$quetionText = ctxt.$answerRevealer.find('h2.question');
+	ctxt.$arbitraryPane = $('#arbitraryPane');
 	ctxt.$statusPane = $('#statusPane');
 	ctxt.$statusText = ctxt.$statusPane.find('h1');
 	ctxt.$wagerPane = $('#wagerPane');
@@ -22,6 +24,7 @@ var Game = function(activity) {
 	ctxt.$playerBuzzed = $('#playerBuzzed');
 	ctxt.$buzzerName = $('#buzzerName');
 	ctxt.$buzzIn = $('#buzzIn');
+	ctxt.updateState(activity);
 };
 
 Game.prototype.showNotice = function(msg, opts) {
@@ -103,11 +106,12 @@ Game.prototype.showAnswer = function(row, col, options) {
 	ctxt.current.$cell = $cell;
 	console.log('answer:', ans);
 
-	ctxt.$statusPane.css({opacity: 0});
+	ctxt.hideAllOverlays();
 	ctxt.$answerText.html('A: ' + ans.answer);
 	ctxt.$quetionText.html(running ? ('Q: ' + ans.question) : '');
 	//console.log($cell.position(), $cell.width(), $cell.height());
 	ctxt.$answerRevealer
+		.removeClass('hidden')
 		.css({
 			left: $cell.position().left,
 			top: $cell.position().top,
@@ -129,17 +133,39 @@ Game.prototype.showAnswer = function(row, col, options) {
 		});
 };
 
+Game.prototype.hideAllOverlays = function() {
+	var ctxt = this;
+	ctxt.$overlayPanes.addClass('hidden');
+}
+
 Game.prototype.showStatus = function(msg, opts) {
 	var ctxt = this;
-	ctxt.$answerRevealer.css({opacity: 0});
+	ctxt.hideAllOverlays();
 	ctxt.$statusText.html(msg);
-	ctxt.$statusPane.animate({
-		opacity: 1, 
-		left: 0,
-		top: 0,
-		right: 0,
-		bottom: 0
-	}, 1000);
+	ctxt.$statusPane
+		.removeClass('hidden')
+		.animate({
+			opacity: 1, 
+			left: 0,
+			top: 0,
+			right: 0,
+			bottom: 0
+		}, 1000);
+};
+
+Game.prototype.showArbitrary = function(content, opts) {
+	var ctxt = this;
+	ctxt.hideAllOverlays();
+	ctxt.$statusPane
+		.html(content)
+		.removeClass('hidden')
+		.animate({
+			opacity: 1, 
+			left: 0,
+			top: 0,
+			right: 0,
+			bottom: 0
+		}, 1000);
 };
 
 Game.prototype.updateState = function(activity) {
@@ -217,11 +243,11 @@ Game.prototype.getPlayerScore = function(username) {
 
 Game.prototype.removeAnswer = function(row, col, opts) {
 	var ctxt = this;
-	row = row || ctxt.current.row;
-	col = col|| ctxt.current.col;
-	opts = $.extend({}, opts, {
+	row = typeof row !== 'undefined' ? row : ctxt.current.row;
+	col = typeof col !== 'undefined' ? col : ctxt.current.col;
+	opts = $.extend({}, {
 		immediate: false
-	});
+	}, opts);
 
 	ctxt
 		.getAnswerCell(row, col)
@@ -234,15 +260,17 @@ Game.prototype.removeAnswer = function(row, col, opts) {
 Game.prototype.getDailyDoubleWager = function(cb) {
 	var ctxt = this;
 
+	ctxt.hideAllOverlays();
 	ctxt.$wagerType.html('Daily Double');
-
-	ctxt.$wagerPane.animate({
-		opacity: 1, 
-		left: 0,
-		top: 0,
-		right: 0,
-		bottom: 0
-	}, 1000);
+	ctxt.$wagerPane
+		.removeClass('hidden')
+		.animate({
+			opacity: 1, 
+			left: 0,
+			top: 0,
+			right: 0,
+			bottom: 0
+		}, 1000);
 };
 
 Game.prototype.hideDailyDoubleWager = function() {
@@ -380,11 +408,13 @@ $(function() {
 				ourGame.setCurrent(payload.row, payload.col);
 				if (payload.activity.state.active_player.username === username) {
 					ourGame.getDailyDoubleWager();
+				} else if (running) {
+					ourGame.showStatus("Daily Double!")
 				}
 			},
 			reveal: function(payload) {
 				if (running) { $playerBuzzed.addClass('hidden'); }
-				ourGame.showAnswer(payload.row, payload.col);
+				ourGame.showAnswer(payload.row, payload.col, { immediate: running });
 			},
 			player_play: function(payload) {
 				ourGame.addPlayer(payload.player);
@@ -429,4 +459,21 @@ $(function() {
 	});
 
 	ES.connect();
+
+	// var noSleep = new NoSleep();
+
+	// function enableNoSleep() {
+	// 	noSleep.enable();
+	// 	document.removeEventListener('touchstart', enableNoSleep, false);
+	// }
+
+	// // Enable wake lock.
+	// // (must be wrapped in a user input event handler e.g. a mouse or touch handler)
+	// document.addEventListener('touchstart', enableNoSleep, false);
+
+	// ...
+
+	// Disable wake lock at some point in the future.
+	// (does not need to be wrapped in any user input event handler)
+	//noSleep.disable();
 });

@@ -19,6 +19,7 @@ my $users = App::Model::User->new();
 my $games = App::Model::Game->new();
 my $activities = App::Model::Activity->new();
 
+# @todo get tailable cursors working
 sub tailFind {
 	my ($self, $activity_id) = @_;
 

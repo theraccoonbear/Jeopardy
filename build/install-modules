@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 cd /opt/src;
-if [ "$ENV" = "production" ]
+if [ "$APP_ENV" = "production" ]
 then
+	echo "Installing modules for production with --no-test"
 	cpanm --notest -v -l /opt/src/modules --installdeps .;
 else
+	echo "Installing modules for development with tests"
 	cpanm -v -l /opt/src/modules --installdeps .;
 fi

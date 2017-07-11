@@ -1,71 +1,84 @@
 {
-   "owner" : "theraccoonbear",
+   "name" : "Fun New Game #7250",
+   "_id" : null,
    "answers" : [
       {
          "points" : [
             {
-               "question" : "$200 Question for Category 1?",
                "answer" : "$200 Answer for Category 1.",
-               "value" : 200
+               "question" : "$200 Question for Category 1?",
+               "value" : 200,
+               "daily_double" : null
             },
             {
+               "value" : 200,
+               "daily_double" : null,
                "question" : "$200 Question for Category 2?",
-               "answer" : "$200 Answer for Category 2.",
-               "value" : 200
+               "answer" : "$200 Answer for Category 2."
             },
             {
                "answer" : "$200 Answer for Category 3.",
                "question" : "$200 Question for Category 3?",
+               "daily_double" : null,
                "value" : 200
             },
             {
-               "answer" : "$200 Answer for Category 4.",
-               "question" : "$200 Question for Category 4?",
-               "value" : 200
-            },
-            {
-               "answer" : "$200 Answer for Category 5.",
-               "question" : "$200 Question for Category 5?",
-               "value" : 200
-            },
-            {
+               "daily_double" : null,
                "value" : 200,
+               "answer" : "$200 Answer for Category 4.",
+               "question" : "$200 Question for Category 4?"
+            },
+            {
+               "daily_double" : null,
+               "value" : 200,
+               "answer" : "$200 Answer for Category 5.",
+               "question" : "$200 Question for Category 5?"
+            },
+            {
+               "answer" : "$200 Answer for Category 6.",
                "question" : "$200 Question for Category 6?",
-               "answer" : "$200 Answer for Category 6."
+               "daily_double" : null,
+               "value" : 200
             }
          ]
       },
       {
          "points" : [
             {
-               "value" : 400,
                "question" : "$400 Question for Category 1?",
-               "answer" : "$400 Answer for Category 1."
-            },
-            {
+               "answer" : "$400 Answer for Category 1.",
                "value" : 400,
-               "question" : "$400 Question for Category 2?",
-               "answer" : "$400 Answer for Category 2."
+               "daily_double" : null
             },
             {
+               "question" : "$400 Question for Category 2?",
+               "answer" : "$400 Answer for Category 2.",
+               "value" : 400,
+               "daily_double" : null
+            },
+            {
+               "daily_double" : null,
                "value" : 400,
                "question" : "$400 Question for Category 3?",
                "answer" : "$400 Answer for Category 3."
             },
             {
-               "answer" : "$400 Answer for Category 4.",
                "question" : "$400 Question for Category 4?",
+               "answer" : "$400 Answer for Category 4.",
+               "daily_double" : null,
                "value" : 400
             },
             {
                "value" : 400,
+               "daily_double" : null,
                "question" : "$400 Question for Category 5?",
                "answer" : "$400 Answer for Category 5."
             },
             {
                "value" : 400,
-               "answer" : "$400 Answer for Category 6.",
-               "question" : "$400 Question for Category 6?"
+               "daily_double" : null,
+               "question" : "$400 Question for Category 6?",
+               "answer" : "$400 Answer for Category 6."
             }
          ]
       },
@@ -73,106 +86,123 @@
          "points" : [
             {
                "value" : 600,
+               "daily_double" : null,
                "answer" : "$600 Answer for Category 1.",
                "question" : "$600 Question for Category 1?"
             },
             {
-               "question" : "$600 Question for Category 2?",
                "answer" : "$600 Answer for Category 2.",
-               "value" : 600
+               "question" : "$600 Question for Category 2?",
+               "value" : 600,
+               "daily_double" : null
             },
             {
                "answer" : "$600 Answer for Category 3.",
                "question" : "$600 Question for Category 3?",
-               "value" : 600
+               "value" : 600,
+               "daily_double" : null
             },
             {
+               "daily_double" : null,
                "value" : 600,
                "answer" : "$600 Answer for Category 4.",
                "question" : "$600 Question for Category 4?"
             },
             {
-               "value" : 600,
                "question" : "$600 Question for Category 5?",
-               "answer" : "$600 Answer for Category 5."
+               "answer" : "$600 Answer for Category 5.",
+               "daily_double" : null,
+               "value" : 600
             },
             {
-               "value" : 600,
+               "question" : "$600 Question for Category 6?",
                "answer" : "$600 Answer for Category 6.",
-               "question" : "$600 Question for Category 6?"
+               "daily_double" : null,
+               "value" : 600
             }
          ]
       },
       {
          "points" : [
             {
-               "answer" : "$800 Answer for Category 1.",
+               "value" : 800,
+               "daily_double" : null,
                "question" : "$800 Question for Category 1?",
-               "value" : 800
+               "answer" : "$800 Answer for Category 1."
             },
             {
-               "value" : 800,
+               "answer" : "$800 Answer for Category 2.",
                "question" : "$800 Question for Category 2?",
-               "answer" : "$800 Answer for Category 2."
+               "value" : 800,
+               "daily_double" : null
             },
             {
                "question" : "$800 Question for Category 3?",
                "answer" : "$800 Answer for Category 3.",
-               "value" : 800
-            },
-            {
-               "answer" : "$800 Answer for Category 4.",
-               "question" : "$800 Question for Category 4?",
-               "value" : 800
-            },
-            {
-               "question" : "$800 Question for Category 5?",
-               "answer" : "$800 Answer for Category 5.",
-               "value" : 800
-            },
-            {
                "value" : 800,
+               "daily_double" : null
+            },
+            {
+               "question" : "$800 Question for Category 4?",
+               "answer" : "$800 Answer for Category 4.",
+               "value" : 800,
+               "daily_double" : null
+            },
+            {
+               "answer" : "$800 Answer for Category 5.",
+               "question" : "$800 Question for Category 5?",
+               "value" : 800,
+               "daily_double" : null
+            },
+            {
+               "answer" : "$800 Answer for Category 6.",
                "question" : "$800 Question for Category 6?",
-               "answer" : "$800 Answer for Category 6."
+               "value" : 800,
+               "daily_double" : null
             }
          ]
       },
       {
          "points" : [
             {
-               "question" : "$1000 Question for Category 1?",
                "answer" : "$1000 Answer for Category 1.",
+               "question" : "$1000 Question for Category 1?",
+               "daily_double" : null,
                "value" : 1000
             },
             {
                "value" : 1000,
+               "daily_double" : null,
                "answer" : "$1000 Answer for Category 2.",
                "question" : "$1000 Question for Category 2?"
             },
             {
-               "value" : 1000,
                "answer" : "$1000 Answer for Category 3.",
-               "question" : "$1000 Question for Category 3?"
+               "question" : "$1000 Question for Category 3?",
+               "value" : 1000,
+               "daily_double" : null
             },
             {
+               "daily_double" : null,
                "value" : 1000,
                "answer" : "$1000 Answer for Category 4.",
                "question" : "$1000 Question for Category 4?"
             },
             {
-               "answer" : "$1000 Answer for Category 5.",
                "question" : "$1000 Question for Category 5?",
-               "value" : 1000
+               "answer" : "$1000 Answer for Category 5.",
+               "value" : 1000,
+               "daily_double" : null
             },
             {
                "answer" : "$1000 Answer for Category 6.",
                "question" : "$1000 Question for Category 6?",
-               "value" : 1000
+               "value" : 1000,
+               "daily_double" : null
             }
          ]
       }
    ],
-   "name" : "Sample Jeopardy! Game",
    "categories" : [
       {
          "name" : "Jeopardy! Category No. 1"
@@ -192,5 +222,6 @@
       {
          "name" : "Jeopardy! Category No. 6"
       }
-   ]
+   ],
+   "owner" : "theraccoonbear"
 }

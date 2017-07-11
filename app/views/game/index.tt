@@ -14,6 +14,7 @@
 		<div class="btn-group" role="group" aria-label="...">
 			<a href="/game/edit/[% game._id %]" class="btn btn-warning"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
 			<a href="/activity/from/[% game._id %]" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Host</a>
+			<a href="/game/export/[% game._id %]" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span> Export</a>
 			<a href="/game/delete/[% game._id %]" class="btn btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a>
 		</div>
 	</li>

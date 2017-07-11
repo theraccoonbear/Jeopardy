@@ -107,3 +107,17 @@ body {
 .btn-buzz-in {
 	min-height: 250px;
 }
+
+.loading-spinner {
+	position: fixed;
+	left: 10px;
+	top: 10px;
+	width: 66px;
+	height: 66px;
+	z-index: 2000;
+	background: url(/img/ajax-loader.gif) no-repeat center center fixed; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}

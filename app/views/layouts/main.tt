@@ -23,6 +23,7 @@
 	
 	<script type="text/javascript" src="[% request.uri_base  %]/javascripts/main.js"></script>
 	<script type="text/javascript" src="[% request.uri_base  %]/javascripts/websocket.js"></script>
+	<script type="text/javascript" src="[% request.uri_base  %]/javascripts/NoSleep.min.js"></script>
 	[% FOREACH script IN vars.extra_scripts %]
 	<script type="text/javascript" src="[% request.uri_base  %]/javascripts/[% script %]"></script>
 	[% END %]
@@ -82,5 +83,7 @@
 			[% INCLUDE flashmsg %]
 		[% content %]
 		</div>
+
+		<div id="loadingSpinner" class="loading-spinner hidden"></div>
 	</body>
 </html>

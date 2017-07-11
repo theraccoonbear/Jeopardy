@@ -10,43 +10,13 @@ use boolean;
 
 extends 'App::Model';
 
-#use App::Auth;
 use Data::Printer;
-#use App::DB;
-#use MongoDB::OID;
-#use Cwd qw(abs_path);
 
 has '+model_name' => (default => 'games');
 
-# my $auth = App::Auth->new();
-# my $mongo = App::DB->instance();
-# my $db = $mongo->get_database("jeopardy");
-
-# sub _cond {
-# 	my ($self, $cond) = @_;
-# 	if (!$cond) {
-# 		$cond = {};
-# 	} elsif (!ref $cond) {
-# 		$cond = {_id => MongoDB::OID->new($cond)};
-# 	} elsif (ref $cond eq 'MongoDB::OID') {
-# 		$cond = {_id => $cond};
-# 	}
-
-# 	return $cond;
-# }
-
-# sub list {
-# 	my ($self) = @_;
-	
-# 	my $games_rs = $db->get_collection("games");
-	
-# 	my $games = [$games_rs->find()->all()];
-# 	return $games;
-# }
-
 sub load_related {
 	my ($self, $game) = @_;
-
+	return $game;
 }
 
 sub add {
@@ -59,6 +29,7 @@ sub add {
 		
 	} (1..6)];
 
+	# @todo: add support for multiple daily double
 	my $dd_row = int(rand(5)) + 1;
 	my $dd_col = int(rand(6)) + 1;
 
@@ -79,31 +50,9 @@ sub add {
 	} (1..5)];
 	my $coll = $self->collection();
 
-	
-
 	return $coll->insert_one($game);
 }
 
-# sub save {
-# 	my ($self, $cond, $game) = @_;
-
-# 	my $games = $db->get_collection("games");
-# 	return $games->update_one($self->_cond($cond), {'$set' => $game});
-# }
-
-# sub get {
-# 	my ($self, $cond) = @_;
-	
-# 	my $coll = $db->get_collection("games");
-# 	return $coll->find_one($self->_cond($cond));
-# }
-
-# sub remove {
-# 	my ($self, $cond) = @_;
-
-# 	my $coll = $db->get_collection("games");
-# 	return $coll->delete_many($self->_cond($cond));
-# }
 
 sub setColumnCategory {
 	my ($self, $game_id, $pos, $label) = @_;

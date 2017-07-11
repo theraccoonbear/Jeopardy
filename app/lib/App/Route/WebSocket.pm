@@ -147,12 +147,11 @@ sub to_app {
                                 $resp->{msg} = 'Not in answering state!';
                             }
                         } elsif ($dat->{action} eq 'dismiss_answer') {
-                            $activities->set_phase($dat->{activity_id}, 'choosing', { x => 1 });
+                            $activities->set_phase($dat->{activity_id}, 'choosing', {});
                             $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'dismiss_answer', $dat->{payload});
                         } elsif ($dat->{action} eq 'kill_answer') {
                             $dat->{payload}->{current}->{user} = { username => false };
                             $activities->claim_answer($dat->{activity_id}, $dat->{payload}->{current}->{user}, $dat->{payload}->{current}->{row}, $dat->{payload}->{current}->{col});
-                            
                             $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'kill_answer', $dat->{payload});
                         } elsif ($dat->{action} eq 'wager') {
                             p($dat);
