@@ -4,7 +4,7 @@ use warnings;
 our $VERSION = 0.1;
 use utf8;
 
-use Dancer2 appname => 'jeopardy';
+#use Dancer2 appname => 'jeopardy';
 use Plack::App::WebSocket;
 use AnyEvent;
 use AnyEvent::HTTP;
@@ -141,7 +141,7 @@ sub to_app {
                                 $activities->set_phase($dat->{activity_id}, 'reveal', {
                                     row => $dat->{payload}->{current}->{row},
                                     col => $dat->{payload}->{current}->{col}
-                                }); #$dat->{payload});
+                                });
                                 $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'wrong_answer', $dat->{payload});
                             } else {
                                 $resp->{msg} = 'Not in answering state!';

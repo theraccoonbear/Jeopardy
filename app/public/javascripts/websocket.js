@@ -3,8 +3,9 @@ var EventSocket = function(opts) {
 
 	ctxt.options = $.extend({
 		url: 'ws://' + document.location.hostname + ':' + document.location.port + '/websocket/',
-		reconnectDelay: 1000,
+		reconnectDelay: 5000,
 		reconnectLimit: false,
+		connectionAttempts: 0,
 		on: {}
 	}, opts);
 
@@ -42,14 +43,17 @@ EventSocket.prototype._dispatch = function(event, data) {
 	}
 };
 
-EventSocket.prototype.connect = function(url) {
+EventSocket.prototype.connect = function(url, opts) {
 	var ctxt = this;
 	
-	url = url || ctxt.options.url;
-	console.log(ctxt);
+	url = typeof url !== 'undefined' ? url : ctxt.options.url;
+	var options = $.extend({
+		after: false
+	}, opts);
 
 	console.log('Connecting to:', url);
 
+	ctxt.options.connectionAttempts++;
 	ctxt._socket = new WebSocket(url);
 
 	ctxt._socket.onmessage = function(e) {
@@ -69,26 +73,45 @@ EventSocket.prototype.connect = function(url) {
 
 	ctxt._socket.onopen = function() {
 		console.log('...Connected!');
-		//console.log("Subscribing to ", activity_id);
+		ctxt.options.connectionAttempts = 0;
+		if (options.after !== false) {
+			after();
+		}
 		ctxt.options.ready();
+		
 	};
 
 	ctxt._socket.onclose = function(x) {
 		console.log('Socket closing!', x);
-		console.log('Reconnecting in ' + (ctxt.reconnectDelay / 1000) + ' second(s)')
-		setTimeout(function() {
-			ctxt.connect();
-		}, ctxt.reconnectDelay);
+		if (ctxt.options.connectionAttempts < ctxt.options.reconnectLimit) {
+			console.log('Reconnecting in ' + (ctxt.options.reconnectDelay / 1000) + ' second(s)')
+			setTimeout(function() {
+				ctxt.connect();
+			}, ctxt.options.reconnectDelay);
+		} else {
+			ctxt.options.connectionAttempts = 0;
+			console.log("I give up!");
+		}
 	}
 
 	ctxt._socket.onerror = function(e) {
 		console.log("WEBSOCKET ERROR:", e);
+		console.log('Socket:', ctxt._socket);
 	}
 };
 
 EventSocket.prototype.send = function(raw) {
 	var ctxt = this;
-	ctxt._socket.send(raw);
+	if (ctxt._socket.readyState === 1) {
+		ctxt._socket.send(raw);
+	} else {
+		console.log("Send attempted while disconnected. Reconnecting...");
+		ctxt.connect(ctxt.options.url, {
+			after: function() {
+				ctxt._socket.send(raw);
+			}
+		})
+	}
 };
 
 EventSocket.prototype.emitEvent = function(action, activity_id, payload) {

@@ -3,7 +3,9 @@ var socket;
 var Game = function(activity) {
 	var ctxt = this;
 	var opts = activity.game;
-	ctxt.options = $.extend({}, opts);
+	ctxt.options = $.extend({
+		revealSpeed: 250
+	}, opts);
 	ctxt.state = activity.state;
 	ctxt.current = {
 		answer: false,
@@ -66,7 +68,7 @@ Game.prototype.hideAnswer = function() {
 	var ctxt = this;
 	ctxt.$answerRevealer.animate({
 		opacity: 0
-	}, 1000, null, function() {
+	}, ctxt.revealSpeed, null, function() {
 		if (running) {
 			$buzzerName.html('');
 		} else {
@@ -126,7 +128,7 @@ Game.prototype.showAnswer = function(row, col, options) {
 			top: 0,
 			right: 0,
 			bottom: 0
-		}, opts.immediate ? 0 : 1000, function() {
+		}, opts.immediate ? 0 : ctxt.revealSpeed, function() {
 			if (opts.answering) {
 				ctxt.playerBuzzed(opts.answering);
 			}
@@ -150,7 +152,7 @@ Game.prototype.showStatus = function(msg, opts) {
 			top: 0,
 			right: 0,
 			bottom: 0
-		}, 1000);
+		}, ctxt.revealSpeed);
 };
 
 Game.prototype.showArbitrary = function(content, opts) {
@@ -165,7 +167,7 @@ Game.prototype.showArbitrary = function(content, opts) {
 			top: 0,
 			right: 0,
 			bottom: 0
-		}, 1000);
+		}, ctxt.revealSpeed);
 };
 
 Game.prototype.updateState = function(activity) {
@@ -270,7 +272,7 @@ Game.prototype.getDailyDoubleWager = function(cb) {
 			top: 0,
 			right: 0,
 			bottom: 0
-		}, 1000);
+		}, ctxt.revealSpeed);
 };
 
 Game.prototype.hideDailyDoubleWager = function() {
@@ -299,8 +301,6 @@ Game.prototype.playerBuzzed = function(user) {
 
 $(function() {
 	var ws_url = "ws://" + document.location.hostname + ":5000/websocket/";
-	var failedConnections = 0;
-	var reconnectDelay = 1000; // ms until reconnect
 	var ourGame = new Game(game);
 
 	var $pointBlocks = $('.point.block');
@@ -330,7 +330,8 @@ $(function() {
 
 	var ES = new EventSocket({
 		url: ws_url,
-		reconnectDelay: reconnectDelay,
+		reconnectDelay: 1000,
+		reconnectLimit: 10,
 		ready: function() {
 			ES.send(JSON.stringify({
 				action: 'subscribe',
