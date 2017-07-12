@@ -51,6 +51,8 @@ sub emitEvent {
 		timestamp => time
 	};
 
+	# @todo: use this https://metacpan.org/pod/Hash::Sanitize
+
 	return $self->add($event);
 }
 

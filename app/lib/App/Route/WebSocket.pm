@@ -15,6 +15,7 @@ use App::Model::Session;
 use boolean;
 
 my $events = App::Model::Event->new();
+my $users = App::Model::User->new();
 my $activities = App::Model::Activity->new();
 my $sessions = App::Model::Session->new();
 my $json = JSON::XS->new->ascii->pretty->allow_nonref->allow_blessed->convert_blessed;
@@ -158,6 +159,14 @@ sub to_app {
                             say STDERR 'Wagered $' . $dat->{payload}->{wager} . '. Revealing ' .  $dat->{payload}->{row} . ', ' . $dat->{payload}->{col};
                             $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'reveal', $dat->{payload});
                             $activities->set_phase($dat->{activity_id}, 'reveal', $dat->{payload});
+                        } elsif ($dat->{action} eq 'update_player') {
+                            say STDERR "update_player";
+                            my $player = $users->getByUsername($dat->{payload}->{username});
+                            if ($dat->{payload}->{active_player}) {
+                                $activities->set_active_player($dat->{activity_id}, $player);
+                            }
+                            $activities->set_score($dat->{activity_id}, $player, $dat->{payload}->{score});
+                            $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'state_update', {});
                         } else {
                             p($dat->{payload});
                             say STDERR "Unknown WebSocket Action: " .  $dat->{action};

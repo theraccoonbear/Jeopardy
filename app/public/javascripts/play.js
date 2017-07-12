@@ -26,6 +26,7 @@ var Game = function(activity) {
 	ctxt.$playerBuzzed = $('#playerBuzzed');
 	ctxt.$buzzerName = $('#buzzerName');
 	ctxt.$buzzIn = $('#buzzIn');
+	ctxt.hideAllOverlays();
 	ctxt.updateState(activity);
 };
 
@@ -180,6 +181,19 @@ Game.prototype.updateState = function(activity) {
 	$.each(ctxt.state.players, function(i, p) {
 		var $p = $('li[data-player="' + p.username + '"]');
 		$p.find('.score').html(1 * p.score);
+		if (ctxt.state.active_player && p.username == ctxt.state.active_player.username) {
+			$p
+				.addClass('baton')
+				.find('.glyphicon')
+				.addClass('glyphicon-check')
+				.removeClass('glyphicon-unchecked');
+		} else {
+			$p
+				.removeClass('baton')
+				.find('.glyphicon')
+				.removeClass('glyphicon-check')
+				.addClass('glyphicon-unchecked');
+		}
 	});
 
 	$.each(ctxt.state.claims, function(ri, r) {
@@ -226,21 +240,35 @@ Game.prototype.addPlayer = function(player) {
 	console.log('player!', player);
 	var $player = $playerList.find('li[data-player="' + player.username + '"]');
 	if ($player.length < 1) {
-		var $newplayer = $('<li data-player="' + player.username + '" class="list-inline-item"><span class="username">' + player.username + '</span> ($<span class="score"></span>)</li>');
+		var $newplayer = $('<li data-player="' + player.username + '" class="list-inline-item' + (ctxt.state.active_player && ctxt.state.active_player.username == player.username ? ' baton' : '') + '"><span class="glyphicon"></span> <span class="username">' + player.username + '</span> ($<span class="score"></span>)</li>');
 		$playerList.append($newplayer);
 	}
 };
 
-Game.prototype.getPlayerScore = function(username) {
+Game.prototype.isPlayerActive = function(username) {
 	var ctxt = this;
-	var score = false;
+
+	return typeof ctxt.state.active_player !== 'undefined' && ctxt.state.active_player.username === username;
+};
+
+Game.prototype.getPlayer = function(username) {
+	var ctxt = this;
+	var player = false;
 	$.each(ctxt.state.players, function(i, p) {
 		if (p.username === username) {
-			score = p.score;
+			player = p;
 		}
 	});
 
-	return score;
+	return player;
+};
+
+Game.prototype.getPlayerScore = function(username) {
+	var ctxt = this;
+	var player = this.getPlayer(username);
+
+
+	return player ? player.score : 0;
 };
 
 Game.prototype.removeAnswer = function(row, col, opts) {
@@ -353,6 +381,35 @@ $(function() {
 					}
 				});
 
+				$('#playerList').on('click', '[data-player]', function(e) {
+					var $this = $(this);
+					console.log('you clicked player:', $this.data('player'), $this);
+
+					if ($this.hasClass('active')) { return; }
+
+					$this.closest('ul').find('[data-player]').removeClass('active');
+
+					var player = ourGame.getPlayer($this.data('player'));
+					$playerScore
+						.val(player.score)
+						.data('active-player', player);
+
+					$playerIsActive
+						.prop('checked', ourGame.isPlayerActive(player.username));
+
+					$this
+						.addClass('active');
+				});
+
+				$savePlayer.on('click', function() {
+					var player = $playerScore.data('active-player');
+					ES.emitEvent('update_player', activity_id, {
+						username: player.username,
+						score: $playerScore.val(),
+						active_player: $playerIsActive.is(':checked')
+					});
+				});
+
 				$acceptAnswer.on('click', function(e) {
 					ES.emitEvent('accept_answer', activity_id, {current: ourGame.current});
 				});
@@ -409,8 +466,8 @@ $(function() {
 				ourGame.setCurrent(payload.row, payload.col);
 				if (payload.activity.state.active_player.username === username) {
 					ourGame.getDailyDoubleWager();
-				} else if (running) {
-					ourGame.showStatus("Daily Double!")
+				} else {
+					ourGame.showStatus("Daily Double!");
 				}
 			},
 			reveal: function(payload) {

@@ -27,6 +27,18 @@ sub load_related {
 	return $user;
 }
 
+sub set_active_player {
+	my ($self, $activity_id, $player) = @_;
+
+	my $data = {
+		'state.active_player' => $player
+	};
+
+	$self->save($activity_id, $data);
+
+	return;
+}
+
 sub set_phase {
 	my ($self, $activity_id, $phase, $meta) = @_;
 
@@ -54,6 +66,22 @@ sub claim_answer {
 		'state.claims.' . $row . q{.} . $col => $player->{username}
 	};
 	return $self->save($activity_id, $update);
+}
+
+sub set_score {
+	my ($self, $activity_id, $player, $score) = @_;
+	my $act = $self->get($activity_id);
+	$act->{state}->{players} = [
+		map {
+			if ($_->{username} eq $player->{username}) {
+				$_->{score} = $score;
+			}
+			$_;
+		}
+		@{ $act->{state}->{players} }
+	];
+
+	return $self->save($activity_id, { 'state.players' => $act->{state}->{players}});
 }
 
 sub award_score {
