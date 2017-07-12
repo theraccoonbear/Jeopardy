@@ -143,9 +143,9 @@ get '/watch/:activity_id' => sub {
 
 	$activity = $activities->load_related($activity);
 
-	template 'activity/watch', {
+	template 'activity/play', {
 		activity => $activity,
-		displayOnly => 1
+		watching => 1
 	};
 };
 

@@ -87,5 +87,6 @@
 	var game = [% activity.json %];
 	var activity_id = '[% activity_id %]';
 	var running = !!'[% running %]';
+	var watching = !!'[% watching %]';
 	var username = '[% vars.username %]';
 </script>
