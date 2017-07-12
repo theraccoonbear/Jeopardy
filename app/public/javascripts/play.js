@@ -180,6 +180,9 @@ Game.prototype.updateState = function(activity) {
 
 	$.each(ctxt.state.players, function(i, p) {
 		var $p = $('li[data-player="' + p.username + '"]');
+		if ($p.length < 1) {
+			$p = ctxt.addPlayer(p);
+		}
 		$p.find('.score').html(1 * p.score);
 		if (ctxt.state.active_player && p.username == ctxt.state.active_player.username) {
 			$p
@@ -236,13 +239,14 @@ Game.prototype.activatePlayer = function(player) {
 
 Game.prototype.addPlayer = function(player) {
 	var ctxt = this;
-	ctxt.showNotice(player.username + ' is playing now!');
-	console.log('player!', player);
 	var $player = $playerList.find('li[data-player="' + player.username + '"]');
+	
 	if ($player.length < 1) {
-		var $newplayer = $('<li data-player="' + player.username + '" class="list-inline-item' + (ctxt.state.active_player && ctxt.state.active_player.username == player.username ? ' baton' : '') + '"><span class="glyphicon"></span> <span class="username">' + player.username + '</span> ($<span class="score"></span>)</li>');
-		$playerList.append($newplayer);
+		$player = $('<li data-player="' + player.username + '" class="list-inline-item' + (ctxt.state.active_player && ctxt.state.active_player.username == player.username ? ' baton' : '') + '"><span class="glyphicon"></span> <span class="username">' + player.username + '</span> ($<span class="score"></span>)</li>');
+		$playerList.append($player);
+		ctxt.showNotice(player.username + ' is playing now!');
 	}
+	return $player;
 };
 
 Game.prototype.isPlayerActive = function(username) {
