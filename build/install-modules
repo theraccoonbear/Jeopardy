@@ -3,9 +3,9 @@
 cd /opt/src;
 if [ "$APP_ENV" = "production" ]
 then
-	echo "Installing modules for production with --no-test"
-	cpanm --notest -v -l /opt/src/modules --installdeps .;
-else
-	echo "Installing modules for development with tests"
+	echo "Installing modules for production with tests"
 	cpanm -v -l /opt/src/modules --installdeps .;
+else
+	echo "Installing modules for development with --notest"
+	cpanm --notest -v -l /opt/src/modules --installdeps .;
 fi
