@@ -6,7 +6,7 @@
 
 <ul class="notices" id="notices"></ul>
 
-<ul id="playerList" class="player-list list-inline">
+<ul id="playerList" class="player-list list-inline nav nav-pills">
 	[% FOREACH player IN activity.state.players %]
 	<li data-player="[% player.username %]" class="list-inline-item player"><span class="glyphicon"></span> <span class="username">[% player.username %]</span> ($<span class="score">[% player.score %]</span>)</li>
 	[% END %]
@@ -24,12 +24,12 @@
 		<input type="checkbox" id="playerIsActive" class="form-control"> <label for="playerIsActive">Active Player:</label>
 	</div>
 	<div class="col-md-2">
-		<button type="button" id="savePlayer" class="btn btn-primary btn-lg">Save</button
+		<button type="button" id="savePlayer" class="btn btn-primary btn-lg">Save</button>
 	</div>
 </div>
 [% END %]
 
-<div class="overlay-pane" id="answerRevealer">
+<div class="overlay-pane question-pane" id="answerRevealer">
 	<h1 class="answer"></h1>
 	<h2 class="question"></h1>
 	

@@ -126,3 +126,22 @@ body {
 	-o-background-size: cover;
 	background-size: cover;
 }
+
+.question-pane .answer {
+	font-size: 26px;
+}
+
+.question-pane .question {
+	font-size: 20px;
+}
+
+.daily-double-image {
+	width: 100%;
+	height: 100%;
+	z-index: 1000;
+	background: url(/img/daily-double.jpg) no-repeat center center fixed; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;	
+}

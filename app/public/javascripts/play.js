@@ -112,7 +112,7 @@ Game.prototype.showAnswer = function(row, col, options) {
 	ctxt.hideAllOverlays();
 	ctxt.$answerText.html('A: ' + ans.answer);
 	ctxt.$quetionText.html(running ? ('Q: ' + ans.question) : '');
-	//console.log($cell.position(), $cell.width(), $cell.height());
+	
 	ctxt.$answerRevealer
 		.removeClass('hidden')
 		.css({
@@ -171,6 +171,13 @@ Game.prototype.showArbitrary = function(content, opts) {
 		}, ctxt.revealSpeed);
 };
 
+Game.prototype.getAnswer = function(row, col) {
+	var ctxt = this;
+	row = typeof row !== 'undefined' ? row : ctxt.current.row;
+	col = typeof col !== 'undefined' ? col : ctxt.current.col;
+	return ctxt.options.answers[row].points[col];
+}
+
 Game.prototype.updateState = function(activity) {
 	var ctxt = this;
 
@@ -222,8 +229,9 @@ Game.prototype.updateState = function(activity) {
 					console.log('answering:', activity.state);
 					ctxt.showAnswer(activity.state.meta.row, activity.state.meta.col, { answering: activity.state.meta.user, immediate: true });
 					break;
-				case 'choosing':
-					break;
+				case 'daily_double_wager':
+					console.log("Daily Double!");
+					ctxt.showDailyDouble();
 				default:
 					console.log("Unknown phase:", activity.state.phase);
 			}
@@ -252,7 +260,12 @@ Game.prototype.addPlayer = function(player) {
 Game.prototype.isPlayerActive = function(username) {
 	var ctxt = this;
 
-	return typeof ctxt.state.active_player !== 'undefined' && ctxt.state.active_player.username === username;
+	return typeof ctxt.state !== 'undefined' && 
+		typeof ctxt.state.active_player !== 'undefined' &&
+		ctxt.state.active_player && 
+		typeof ctxt.state.active_player.username !== 'undefined' &&
+		typeof ctxt.state.active_player.username &&
+		ctxt.state.active_player.username === username;
 };
 
 Game.prototype.getPlayer = function(username) {
@@ -329,6 +342,17 @@ Game.prototype.playerBuzzed = function(user) {
 	} else {
 		ctxt.$buzzIn.hide();
 	}
+};
+
+Game.prototype.showDailyDouble = function() {
+	var ctxt = this;
+	if (ctxt.state.active_player.username === username) {
+		ctxt.getDailyDoubleWager();
+	} else if (running) {
+		ctxt.showAnswer(ctxt.state.meta.row, ctxt.state.meta.col);
+	} else {
+		ctxt.showArbitrary('<div class="daily-double-image"></div>');
+	}	
 };
 
 $(function() {
@@ -468,11 +492,7 @@ $(function() {
 				console.log('daily_double', payload);
 				console.log(payload.activity.state.active_player.username, username);
 				ourGame.setCurrent(payload.row, payload.col);
-				if (payload.activity.state.active_player.username === username) {
-					ourGame.getDailyDoubleWager();
-				} else {
-					ourGame.showStatus("Daily Double!");
-				}
+				ourGame.showDailyDouble();
 			},
 			reveal: function(payload) {
 				if (running) { $playerBuzzed.addClass('hidden'); }
@@ -490,29 +510,27 @@ $(function() {
 			wrong_answer: function(payload) {
 				console.log('wrong_answer', payload);
 				ourGame.showNotice(payload.user.username + ' was wrong', {type: 'danger'});
-				if (running) {
-					$playerBuzzed.addClass('hidden');
+				var ans = ourGame.getAnswer();
+				if (ans.daily_double) {
+					ourGame.hideAllOverlays();
 				} else {
-					$buzzIn.show();
+					if (running) {
+						$playerBuzzed.addClass('hidden');
+					} else {
+						$buzzIn.show();
+					}
 				}
 			},
 			dismiss_answer: function(payload) {
-				ourGame.hideAnswer();
+				ourGame.hideAllOverlays();
 			},
 			kill_answer: function(payload) {
-				ourGame.hideAnswer();
+				ourGame.hideAllOverlays();
 				ourGame.removeAnswer();
 			},
 			buzz: function(payload) {
 				console.log('Buzz:', payload);
 				ourGame.playerBuzzed(payload.user);
-				// ourGame.current.user = payload.user;
-				// if (running) {
-				// 	$buzzerName.html(payload.user.username);
-				// 	$playerBuzzed.removeClass('hidden');
-				// } else {
-				// 	$buzzIn.hide();
-				// }
 			},
 			player_running: function(payload) {
 				ourGame.showNotice(payload.player.username + ' is running the game!');

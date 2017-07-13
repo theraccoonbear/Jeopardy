@@ -111,15 +111,21 @@ sub to_app {
                             $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'reveal', $dat->{payload});
                         } elsif ($dat->{action} eq 'daily_double') {
                             say STDERR "Daily Double! " .  $dat->{payload}->{row} . ', ' . $dat->{payload}->{col};
+                            $activities->set_phase($dat->{activity_id}, 'daily_double_wager', $dat->{payload});
                             $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'daily_double', $dat->{payload});
                         } elsif ($dat->{action} eq 'buzz') {
                             if ($act->{state}->{phase} eq 'reveal') {
                                 say STDERR "Buzz from " . $session->{data}->{user}->{username};
-                                $activities->set_phase($dat->{activity_id}, 'answering', {
+                                my $phase_data = {
                                     user => $session->{data}->{user},
                                     row => $dat->{payload}->{current}->{row},
                                     col => $dat->{payload}->{current}->{col}
-                                });
+                                };
+
+                                if ($act->{state}->{meta} && $act->{state}->{meta}->{wager}) {
+                                    $phase_data->{wager} = $act->{state}->{meta}->{wager};
+                                }
+                                $activities->set_phase($dat->{activity_id}, 'answering', $phase_data);
                                 $dat->{payload}->{user} = $session->{data}->{user};
                                 $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'buzz', $dat->{payload});
                             } else {
@@ -128,10 +134,12 @@ sub to_app {
                             }
                         } elsif ($dat->{action} eq 'accept_answer') {
                             if ($act->{state}->{phase} eq 'answering') {
-                                $activities->set_phase($dat->{activity_id}, 'choosing', {});
-                                $activities->award_score($dat->{activity_id}, $dat->{payload}->{current}->{user}, $dat->{payload}->{current}->{answer}->{value});
+                                my $awarded = ($act->{state}->{meta} && $act->{state}->{meta}->{wager}) ? $act->{state}->{meta}->{wager} : $dat->{payload}->{current}->{answer}->{value}; 
+                                
+                                $activities->award_score($dat->{activity_id}, $dat->{payload}->{current}->{user}, $awarded);
                                 $activities->claim_answer($dat->{activity_id}, $dat->{payload}->{current}->{user}, $dat->{payload}->{current}->{row}, $dat->{payload}->{current}->{col});
                                 $dat->{payload}->{user} = $dat->{payload}->{current}->{user};
+                                $activities->set_phase($dat->{activity_id}, 'choosing', {});
                                 $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'accept_answer', $dat->{payload});
                             } else {
                                 $resp->{msg} = 'Not in answering state!';
@@ -139,10 +147,18 @@ sub to_app {
                         } elsif ($dat->{action} eq 'wrong_answer') {
                             if ($act->{state}->{phase} eq 'answering') {
                                 $dat->{payload}->{user} = $dat->{payload}->{current}->{user};
-                                $activities->set_phase($dat->{activity_id}, 'reveal', {
-                                    row => $dat->{payload}->{current}->{row},
-                                    col => $dat->{payload}->{current}->{col}
-                                });
+
+                                if ($act->{state}->{meta} && $act->{state}->{meta}->{wager}) {
+                                    $activities->award_score($dat->{activity_id}, $dat->{payload}->{current}->{user}, -$act->{state}->{meta}->{wager});
+                                    $activities->claim_answer($dat->{activity_id}, {username => '__wrong_daily_double__'}, $dat->{payload}->{current}->{row}, $dat->{payload}->{current}->{col});
+                                     $activities->set_phase($dat->{activity_id}, 'choosing', {});
+                                } else {
+                                    $activities->set_phase($dat->{activity_id}, 'reveal', {
+                                        row => $dat->{payload}->{current}->{row},
+                                        col => $dat->{payload}->{current}->{col}
+                                    });
+                                }
+
                                 $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'wrong_answer', $dat->{payload});
                             } else {
                                 $resp->{msg} = 'Not in answering state!';
@@ -155,7 +171,6 @@ sub to_app {
                             $activities->claim_answer($dat->{activity_id}, $dat->{payload}->{current}->{user}, $dat->{payload}->{current}->{row}, $dat->{payload}->{current}->{col});
                             $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'kill_answer', $dat->{payload});
                         } elsif ($dat->{action} eq 'wager') {
-                            p($dat);
                             say STDERR 'Wagered $' . $dat->{payload}->{wager} . '. Revealing ' .  $dat->{payload}->{row} . ', ' . $dat->{payload}->{col};
                             $events->emitEvent($session->{data}->{user}->{_id}->value, $dat->{activity_id}, 'reveal', $dat->{payload});
                             $activities->set_phase($dat->{activity_id}, 'reveal', $dat->{payload});
