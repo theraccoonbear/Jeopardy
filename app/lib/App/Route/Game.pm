@@ -12,6 +12,7 @@ use App::Data;
 use App::Component::JArchive;
 
 my $games = App::Model::Game->instance();
+my $activities = App::Model::Activity->instance();
 my $data = App::Data->new();
 my $jarchive = App::Component::JArchive->new();
 
@@ -100,10 +101,14 @@ get '/delete/:game_id' => sub {
 	my $game;
 
 	if ($game_id) {
-		# @todo: check if any activities are running these games
 		if ($game_id eq 'all') {
 			$games->remove();
 		} else {
+			$game = $games->get($game_id, {load_related => 1});
+			if ($game->{ActivityCount}) {
+				say STDERR "Removing activities: " . $game->{ActivityCount};
+				$activities->remove({game_id => $activities->oid($game_id)});
+			}
 			$games->remove($game_id);
 		}
 		flash('success' => 'deleted');

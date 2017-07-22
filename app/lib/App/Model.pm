@@ -93,13 +93,17 @@ sub save {
 
 
 sub get {
-	my ($self, $cond) = @_;
-	
+	my ($self, $cond, $extra) = @_;
+
 	my $c = $self->_cond($cond);
 	# say STDERR $self->model_name . "->get() Condition:";
 	# p($c);
 	my $coll = $self->collection();
-	return $coll->find_one($c);
+	my $doc = $coll->find_one($c);
+	if ($extra && $extra->{load_related}) {
+		$doc = $self->load_related($doc);
+	}
+	return $doc;
 }
 
 sub remove {
