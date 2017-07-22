@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 cd /opt/src;
+
 if [ "$APP_ENV" = "production" ]
 then
 	echo "Installing modules for production with tests"

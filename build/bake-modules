@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+echo "Baking modules into docker image"
+cd /opt/src
+cpanm -v --installdeps .;

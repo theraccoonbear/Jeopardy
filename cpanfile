@@ -1,3 +1,4 @@
+# @todo lock these to real versions
 requires 'Data::Printer', '>= 0.0001';
 requires 'AnyEvent', '>= 0.0001';
 requires 'AnyEvent::HTTP', '>= 0.0001';
@@ -13,6 +14,7 @@ requires 'Plack::Middleware::FixMissingBodyInRedirect', '>= 0.0001';
 requires 'Text::Xslate', '>= 0.0001';
 requires 'Moo', '>= 0.0001';
 requires 'Moose', '>= 0.0001';
+requires 'Mongoose', '>= 0.0001';
 requires 'IO::Socket::SSL', '>= 0.0001';
 requires 'LWP::Protocol::https', '>= 0.0001';
 requires 'WWW::Mechanize', '>= 0.0001';

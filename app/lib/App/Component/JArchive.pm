@@ -70,6 +70,10 @@ my $season_scraper = scraper {
 	};
 };
 
+my $episode_scraper = scraper {
+	process '#thing', 'thing' => 'TEXT';
+};
+
 sub listSeasons {
 	my ($self) = @_;
 
