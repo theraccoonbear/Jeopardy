@@ -4,7 +4,7 @@ use warnings;
 
 our $VERSION = 0.1;
 
-use Moo;
+use MooseX::Singleton;
 
 extends 'App::Model';
 
@@ -14,17 +14,19 @@ use App::Model::Game;
 
 has '+model_name' => (default => 'activity');
 
-my $users = App::Model::User->new();
-my $games = App::Model::Game->new();
-
-
 sub load_related {
-	my ($self, $user) = @_;
+	my ($self, $activity) = @_;
+	my $game_id = $activity->{game_id};
+	
+	my $games = App::Model::Game->instance();
+	my $users = App::Model::User->instance();
 
-	$user->{game} = $games->get($user->{game_id});
-	$user->{player_count} = $user->{state}->{players} ? scalar @{$user->{state}->{players}} : 0;
-	$user->{runner} = $users->get($user->{runner_id});
-	return $user;
+	$activity->{game} = $games->get($game_id);
+	$activity->{runner} = $users->get($activity->{runner_id});
+
+	$activity->{player_count} = $activity->{state}->{players} ? scalar @{ $activity->{state}->{players} } : 0;
+	
+	return $activity;
 }
 
 sub set_active_player {

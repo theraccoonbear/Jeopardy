@@ -14,10 +14,10 @@ use List::Util qw(min max);
 use App::Model::Session;
 use boolean;
 
-my $events = App::Model::Event->new();
-my $users = App::Model::User->new();
-my $activities = App::Model::Activity->new();
-my $sessions = App::Model::Session->new();
+my $events = App::Model::Event->instance();
+my $users = App::Model::User->instance();
+my $activities = App::Model::Activity->instance();
+my $sessions = App::Model::Session->instance();
 my $json = JSON::XS->new->ascii->pretty->allow_nonref->allow_blessed->convert_blessed;
 
 sub to_app {
@@ -176,7 +176,7 @@ sub to_app {
                             $activities->set_phase($dat->{activity_id}, 'reveal', $dat->{payload});
                         } elsif ($dat->{action} eq 'update_player') {
                             say STDERR "update_player";
-                            my $player = $users->getByUsername($dat->{payload}->{username});
+                            my $player = $users->get_by_username($dat->{payload}->{username});
                             if ($dat->{payload}->{active_player}) {
                                 $activities->set_active_player($dat->{activity_id}, $player);
                             }

@@ -4,7 +4,7 @@ use warnings;
 
 our $VERSION = 0.1;
 
-use Moo;
+use MooseX::Singleton;
 
 extends 'App::Model';
 
@@ -15,9 +15,9 @@ use App::Model::Activity;
 
 has '+model_name' => (default => 'event');
 
-my $users = App::Model::User->new();
-my $games = App::Model::Game->new();
-my $activities = App::Model::Activity->new();
+my $users = App::Model::User->instance();
+my $games = App::Model::Game->instance();
+my $activities = App::Model::Activity->instance();
 
 # @todo get tailable cursors working
 sub tailFind {

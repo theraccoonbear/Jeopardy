@@ -4,7 +4,7 @@ use warnings;
 
 our $VERSION = 0.1;
 use Carp;
-use Moo;
+use MooseX::Singleton;
 use Data::Printer;
 use App::DB;
 
@@ -16,11 +16,7 @@ my $db = $mongo->get_database("jeopardy");
 
 has 'model_name' => (
 	is => 'rw',
-	isa => sub {
-		if ($_[0] !~ /^[a-zA-Z][a-zA-Z0-9_]+$/xsm) {
-			croak "\"$_[0]\" is not a valid model_name";
-		}
-	},
+	isa => 'Str',
 	default => '_model_'
 );
 
@@ -31,7 +27,8 @@ sub oid {
 
 sub collection {
 	my ($self) = @_;
-	#say STDERR "Getting collection: " . $self->model_name;
+	# say STDERR "Getting collection: " . $self->model_name;
+	# say STDERR "__PACKAGE__: " . __PACKAGE__;
 	return $db->get_collection($self->model_name);
 }
 
@@ -99,8 +96,8 @@ sub get {
 	my ($self, $cond) = @_;
 	
 	my $c = $self->_cond($cond);
-	#say STDERR $self->model_name . "->get() Condition:";
-	#p($c);
+	# say STDERR $self->model_name . "->get() Condition:";
+	# p($c);
 	my $coll = $self->collection();
 	return $coll->find_one($c);
 }

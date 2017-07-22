@@ -16,7 +16,7 @@ use App::Route::Activity;
 our $VERSION = 0.1;
 
 
-my $users = App::Model::User->new();
+my $users = App::Model::User->instance();
 my $auth = App::Auth->new();
 
 
@@ -49,7 +49,7 @@ post '/login' => sub {
 	my $params = request->body_parameters;
 
 	if ($params->{username} && $params->{password}) {
-		my $user = $users->getByUsername($params->{username});
+		my $user = $users->get_by_username($params->{username});
 		if ($user) {
 			if ($auth->validateCredentials($params->{username}, $params->{password})) {
 				say STDERR "$params->{username} authenticated";

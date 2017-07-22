@@ -11,7 +11,7 @@ use App::Model::Game;
 use App::Data;
 use App::Component::JArchive;
 
-my $games = App::Model::Game->new();
+my $games = App::Model::Game->instance();
 my $data = App::Data->new();
 my $jarchive = App::Component::JArchive->new();
 
@@ -28,6 +28,12 @@ get '/join/game_id?' => sub {
 
 get q{/} => sub {
 	my $all_games = $games->list();
+
+	$all_games = [
+		map {
+			$games->load_related($_)
+		} @{ $all_games }
+	];
 
 	if (! scalar @{$all_games}) {
 		$games->add({

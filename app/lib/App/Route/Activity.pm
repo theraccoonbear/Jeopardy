@@ -12,10 +12,10 @@ use App::Model::Game;
 use App::Model::Activity;
 use App::Model::Event;
 
-my $users = App::Model::User->new();
-my $games = App::Model::Game->new();
-my $activities = App::Model::Activity->new();
-my $events = App::Model::Event->new();
+my $users = App::Model::User->instance();
+my $games = App::Model::Game->instance();
+my $activities = App::Model::Activity->instance();
+my $events = App::Model::Event->instance();
 
 prefix '/activity';
 get q{/} => sub {

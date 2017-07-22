@@ -10,7 +10,7 @@ use App::Model::User;
 use Crypt::Bcrypt::Easy;
 use App::DB;
 
-my $users = App::Model::User->new();
+my $users = App::Model::User->instance;
 
 sub list {
 	my ($self) = @_;
@@ -26,7 +26,7 @@ sub create {
 sub validateCredentials {
 	my ($self, $username, $password) = @_;
 
-	my $user = $users->getByUsername($username);
+	my $user = $users->get_by_username($username);
 	if (!$user) {
 		say STDERR "User not found: $username";
 		return;

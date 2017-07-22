@@ -4,7 +4,7 @@ use warnings;
 
 our $VERSION = 0.1;
 
-use Moo;
+use MooseX::Singleton;
 
 extends 'App::Model';
 
@@ -18,7 +18,6 @@ sub get {
 	my $c = { _id => $cond };
 	my $coll = $self->collection();
 	return $coll->find_one($c);
-	return;
 }
 
 1;

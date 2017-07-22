@@ -4,18 +4,23 @@ use warnings;
 
 our $VERSION = 0.1;
 
-use Moo;
+use MooseX::Singleton;
 
 use boolean;
 
 extends 'App::Model';
 
 use Data::Printer;
+use App::Model::Activity;
 
 has '+model_name' => (default => 'games');
 
 sub load_related {
 	my ($self, $game) = @_;
+	my $act = App::Model::Activity->instance();
+	$game->{Activities} = $act->find({game_id =>  $self->oid($game->{_id})});
+	$game->{ActivityCount} = scalar @{ $game->{Activities} };
+
 	return $game;
 }
 
