@@ -184,15 +184,29 @@ post '/import' => sub {
 # 	};
 # };
 
+
+
 get '/j-archive/:game_id' => sub {
 	my $game_id = route_parameters->get('game_id') ;
 
 	if ($game_id) {
-		my $game = $jarchive->getGame($game_id);
-		return template 'game/jarchive-game', {
-			game_id => $game_id,
-			game => $game
-		};
+		my $ids = [split /-/xsm, $game_id];
+		my $base_id = $ids->[0];
+		my $span = scalar @{$ids} < 2 ? 1 : ($ids->[1] - $base_id );
+		my $last_id;
+		say STDERR "Grabbing from $base_id to " . ($base_id + $span);
+
+		foreach my $idx (0..$span) {
+			my $fetch_id = $base_id + $idx;
+			say STDERR "Fetching j-archive #". $fetch_id;
+			my $game = $jarchive->getGame($fetch_id);
+			$game->{owner} = session('username');
+			my $new_game = $games->add($game);
+			$last_id = $new_game->inserted_id;
+			say STDERR "Stored #" . $fetch_id . " as " . $last_id;
+		}
+
+		redirect '/game/edit/' . $last_id;
 	}
 
 	redirect '/game/';

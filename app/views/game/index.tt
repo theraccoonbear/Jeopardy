@@ -4,7 +4,7 @@
 		<a href="/game/random" class="btn btn-lg btn-success btn-block action-delete">Create Random</a>
 	</div>
 	<div class="col-md-6">
-		<a href="/game/import" class="btn btn-lg btn-primary btn-block action-import">Import JSON</a>
+		<a href="/game/import" class="btn btn-lg btn-primary btn-block action-import">Import</a>
 	</div>
 </div>
 <ul class="list-unstyled">
@@ -21,6 +21,19 @@
 	</li>
 	[% END %]
 	<li>
+		<form method="post" action="/game/new">
+		<div class="row">
+			<div class="col-xs-6 col-md-10">
+				<input class="form-control" type="text" id="gameName" name="gameName" placeholder="New game name...">
+			</div>
+			<div class="col-xs-6 col-md-2">
+				<button type="submit" class="btn btn-success btn-md btn-block" id="newGame">Create New</a>
+			</div>
+		</div>
+		</form>
+	</li>
+	<li>
+		<h4>j-archive.com import</h4>
 		<form method="post" action="/game/new">
 		<div class="row">
 			<div class="col-xs-6 col-md-10">

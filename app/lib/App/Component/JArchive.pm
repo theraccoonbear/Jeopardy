@@ -9,6 +9,8 @@ use Dancer2 appname => 'jeopardy';
 use Data::Printer;
 use Web::Scraper;
 use WWW::Mechanize;
+#use JSON::XS;
+use DateTime;
 
 has 'mech' => (
 	'is' => 'rw',
@@ -71,10 +73,15 @@ my $season_scraper = scraper {
 };
 
 my $game_scraper = scraper {
+	process '#game_title h1', 'name' => 'TEXT';
 	process '#jeopardy_round', 'jeopardy_round' => scraper {
-		process 'table.round .category_name', 'category[]' => 'TEXT';
+		process 'table.round .category_name', 'categories[]' => 'TEXT';
 		foreach my $idx (1..5) {
 			process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_text', 'answer_' . ($idx * 200) . '[]' => 'TEXT';
+			process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_header td:nth-child(2)', 'daily_double_' . ($idx * 200) . '[]' => sub {
+				my $v = $_->as_trimmed_text();
+				return $v =~ m/DD:/xsm ? 1 : 0;
+			};
 			process 'table.round > tr:nth-child(' . ($idx + 1) . ') div[onmouseover]', 'question_' . ($idx * 200) . '[]' => sub {
 				my $omo = $_->attr('onmouseover');
 				if ($omo =~ m/correct_response">(?<resp>.+?)<\/em/gismx) {
@@ -97,11 +104,31 @@ sub getGame {
 	if ($self->mech->success) {
 		my $content = $self->mech->content;
 		my $results = $game_scraper->scrape($content);
-		
-		$game->{results} = $results;
+		$game->{name} = $results->{name};
+		$game->{categories} = [
+			map {
+				{ name => $_ }
+			} @{ $results->{jeopardy_round}->{categories} }
+		];
+		$game->{answers} = [];
+
+		foreach my $val_idx (1..5) {
+			push @{ $game->{answers} }, {
+				points => [ map {
+					{ 
+						answer => $results->{jeopardy_round}->{'answer_' . ($val_idx * 200)}[$_],
+						question => $results->{jeopardy_round}->{'question_' . ($val_idx * 200)}[$_],
+						daily_double => ($results->{jeopardy_round}->{'daily_double_' . ($val_idx * 200)}[$_] ? 1 : 0),
+						value => ($val_idx * 200)
+					}
+				} (0..5)]
+			};
+		}
+		$game->{jarchive_id} = $id;
+		$game->{fetched} = DateTime->now();
 	}
 
-	p($game);
+	#p($game);
 
 	return $game;
 }

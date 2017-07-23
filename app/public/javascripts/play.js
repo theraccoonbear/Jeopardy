@@ -26,6 +26,7 @@ var Game = function(activity) {
 	ctxt.$playerBuzzed = $('#playerBuzzed');
 	ctxt.$buzzerName = $('#buzzerName');
 	ctxt.$buzzIn = $('#buzzIn');
+	ctxt.$window = $(window);
 	ctxt.hideAllOverlays();
 	ctxt.updateState(activity);
 };
@@ -112,24 +113,27 @@ Game.prototype.showAnswer = function(row, col, options) {
 	ctxt.hideAllOverlays();
 	ctxt.$answerText.html('A: ' + ans.answer);
 	ctxt.$quetionText.html(running ? ('Q: ' + ans.question) : '');
+
+	var right = window.innerWidth - ($cell.position().left + $cell.width());
+	var bottom = window.innerHeight - ($cell.position().top + $cell.height());
 	
 	ctxt.$answerRevealer
 		.removeClass('hidden')
 		.css({
 			left: $cell.position().left,
 			top: $cell.position().top,
-			right: $cell.position().left + $cell.width(),
-			botom: $cell.position().top + $cell.height(),
+			right: right,
+			bottom: bottom,
 			opacity: 0
-		}
-		).show()
+		})
+		.show()
 		.animate({
 			opacity: 1, 
 			left: 0,
 			top: 0,
 			right: 0,
 			bottom: 0
-		}, opts.immediate ? 0 : ctxt.revealSpeed, function() {
+		}, opts.immediate ? ctxt.revealSpeed : ctxt.revealSpeed, function() {
 			if (opts.answering) {
 				ctxt.playerBuzzed(opts.answering);
 			}
@@ -346,7 +350,7 @@ Game.prototype.playerBuzzed = function(user) {
 
 Game.prototype.showDailyDouble = function() {
 	var ctxt = this;
-	if (ctxt.state.active_player.username === username) {
+	if (ctxt.state.active_player && ctxt.state.active_player.username === username) {
 		ctxt.getDailyDoubleWager();
 	} else if (running) {
 		ctxt.showAnswer(ctxt.state.meta.row, ctxt.state.meta.col);
@@ -490,7 +494,7 @@ $(function() {
 			},
 			daily_double: function(payload) {
 				console.log('daily_double', payload);
-				console.log(payload.activity.state.active_player.username, username);
+				//console.log(payload.activity.state.active_player.username, username);
 				ourGame.setCurrent(payload.row, payload.col);
 				ourGame.showDailyDouble();
 			},
