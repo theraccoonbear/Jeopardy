@@ -70,9 +70,41 @@ my $season_scraper = scraper {
 	};
 };
 
-my $episode_scraper = scraper {
-	process '#thing', 'thing' => 'TEXT';
+my $game_scraper = scraper {
+	process '#jeopardy_round', 'jeopardy_round' => scraper {
+		process 'table.round .category_name', 'category[]' => 'TEXT';
+		foreach my $idx (1..5) {
+			process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_text', 'answer_' . ($idx * 200) . '[]' => 'TEXT';
+			process 'table.round > tr:nth-child(' . ($idx + 1) . ') div[onmouseover]', 'question_' . ($idx * 200) . '[]' => sub {
+				my $omo = $_->attr('onmouseover');
+				if ($omo =~ m/correct_response">(?<resp>.+?)<\/em/gismx) {
+					return $+{resp};
+				}
+				return $omo;
+			};
+		}
+	};
 };
+
+sub getGame {
+	my ($self, $id) = @_;
+	my $url = my $season_url = $self->base_url . '/showgame.php?game_id=' . $id;
+	my $game = {};
+
+	say STDERR "Getting $url";
+
+	$self->mech->get($url);
+	if ($self->mech->success) {
+		my $content = $self->mech->content;
+		my $results = $game_scraper->scrape($content);
+		
+		$game->{results} = $results;
+	}
+
+	p($game);
+
+	return $game;
+}
 
 sub listSeasons {
 	my ($self) = @_;

@@ -166,22 +166,36 @@ post '/import' => sub {
 	};
 };
 
-get '/j-archive/:season_id?' => sub {
-	my $season_num = route_parameters->get('season_id') ;
+# get '/j-archive/:season_id?' => sub {
+# 	my $season_num = route_parameters->get('season_id') ;
 
-	if ($season_num) {
-		my $season = $jarchive->getSeason($season_num);
-		return template 'game/jarchive-season', {
-			episodes => $season->{episodes},
-			season_num => $season_num
+# 	if ($season_num) {
+# 		my $season = $jarchive->getSeason($season_num);
+# 		return template 'game/jarchive-season', {
+# 			episodes => $season->{episodes},
+# 			season_num => $season_num
+# 		};
+# 	}
+
+# 	my $seasons = $jarchive->listSeasons();
+
+# 	return template 'game/jarchive-index', {
+# 		seasons => $seasons
+# 	};
+# };
+
+get '/j-archive/:game_id' => sub {
+	my $game_id = route_parameters->get('game_id') ;
+
+	if ($game_id) {
+		my $game = $jarchive->getGame($game_id);
+		return template 'game/jarchive-game', {
+			game_id => $game_id,
+			game => $game
 		};
 	}
 
-	my $seasons = $jarchive->listSeasons();
-
-	return template 'game/jarchive-index', {
-		seasons => $seasons
-	};
+	redirect '/game/';
 };
 
 
