@@ -120,6 +120,7 @@ Game.prototype.showAnswer = function(row, col, options) {
 	ctxt.$answerRevealer
 		.removeClass('hidden')
 		.css({
+			position: 'fixed',
 			left: $cell.position().left,
 			top: $cell.position().top,
 			right: right,
