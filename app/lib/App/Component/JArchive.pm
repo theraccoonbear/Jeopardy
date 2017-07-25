@@ -98,24 +98,6 @@ my $round_scraper = scraper {
 				};
 			};
 		};
-		
-		# process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_text', 'answer_' . ($idx * 200) . '[]' => 'TEXT';
-		# process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_header td:nth-child(2)', 'value_' . ($idx * 200) . '[]' => sub {
-		# 	my $v = $_->as_trimmed_text();
-		# 	$v =~ s/[^\d]+//gsmx;
-		# 	return 1 * $v;
-		# };
-		# process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_header td:nth-child(2)', 'daily_double_' . ($idx * 200) . '[]' => sub {
-		# 	my $v = $_->as_trimmed_text();
-		# 	return $v =~ m/DD:/xsm ? 1 : 0;
-		# };
-		# process 'table.round > tr:nth-child(' . ($idx + 1) . ') div[onmouseover]', 'question_' . ($idx * 200) . '[]' => sub {
-		# 	my $omo = $_->attr('onmouseover');
-		# 	if ($omo =~ m/correct_response">(?<resp>.+?)<\/em/gismx) {
-		# 		return $+{resp};
-		# 	}
-		# 	return $omo;
-		# };
 	}
 };
 
@@ -143,12 +125,9 @@ sub processRound {
 			} 
 			map { 
 				$_->{value}
-			} @{ $scraped->{scores}->[$val_idx]->{clues} }];
+			} @{ $scraped->{scores}->[$val_idx]->{clues} }
+		];
 		
-		say STDERR "ROUND VALUES:";
-		p($round_values);
-			
-			#$scraped->{'value_' . ($val_idx * 200)};
 		my $count = {};
 		foreach (@$round_values) {
 			$count->{$_}++;
@@ -161,10 +140,6 @@ sub processRound {
 		push @{ $round->{answers} }, {
 			points => [ map {
 				{ 
-					# answer => $scraped->{'answer_' . ($val_idx * 200)}[$_],
-					# question => $scraped->{'question_' . ($val_idx * 200)}[$_],
-					# daily_double => ($scraped->{'daily_double_' . ($val_idx * 200)}[$_] ? 1 : 0),
-					# value => $value
 					answer => $scraped->{scores}->[$val_idx]->{clues}->[$_]->{answer},
 					question => $scraped->{scores}->[$val_idx]->{clues}->[$_]->{question},
 					daily_double => $scraped->{scores}->[$val_idx]->{clues}->[$_]->{daily_double} ? 1 : 0,
