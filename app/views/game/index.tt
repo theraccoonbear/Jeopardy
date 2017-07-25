@@ -8,18 +8,6 @@
 	</div>
 </div>
 <ul class="list-unstyled">
-	[% FOREACH game IN games %]
-	<li>
-		<strong>[% game.name %]</strong> (<em>[% game.owner %]</em>)<br>
-		[% game.ActivityCount %] game(s) running.<br>
-		<div class="btn-group" role="group" aria-label="...">
-			<a href="/game/edit/[% game._id %]" class="btn btn-warning"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
-			<a href="/activity/from/[% game._id %]" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Host</a>
-			<a href="/game/export/[% game._id %]" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span> Export</a>
-			<a href="/game/delete/[% game._id %]" class="btn btn-danger"[% IF game.ActivityCount %] data-speed-bump="[% game.ActivityCount %] game(s) running.  Delete them as well?"[% END %]><span class="glyphicon glyphicon-trash"></span> Delete</a>
-		</div>
-	</li>
-	[% END %]
 	<li>
 		<form method="post" action="/game/new">
 		<div class="row">
@@ -34,17 +22,30 @@
 	</li>
 	<li>
 		<h4>j-archive.com import</h4>
-		<form method="post" action="/game/new">
+		<form method="get" action="/game/j-archive/">
 		<div class="row">
 			<div class="col-xs-6 col-md-10">
-				<input class="form-control" type="text" id="gameName" name="gameName" placeholder="New game name...">
+				<input class="form-control" type="number" id="jArchiveId" name="jArchiveId" placeholder="j-archive.com game id#">
 			</div>
 			<div class="col-xs-6 col-md-2">
-				<button type="submit" class="btn btn-success btn-md btn-block" id="newGame">Create New</a>
+				<button type="submit" class="btn btn-success btn-md btn-block" id="jArchiveSubmit">Import</a>
 			</div>
 		</div>
 		</form>
 	</li>
+	[% FOREACH game IN games %]
+	<li>
+		<strong>[% game.name %]</strong> (<em>[% game.owner %]</em>)<br>
+		[% game.ActivityCount %] game(s) running.<br>
+		<div class="btn-group" role="group" aria-label="...">
+			<a href="/game/edit/[% game._id %]" class="btn btn-warning"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+			<a href="/activity/from/[% game._id %]" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Host</a>
+			<a href="/game/export/[% game._id %]" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span> Export</a>
+			<a href="/game/delete/[% game._id %]" class="btn btn-danger"[% IF game.ActivityCount %] data-speed-bump="[% game.ActivityCount %] game(s) running.  Delete them as well?"[% END %]><span class="glyphicon glyphicon-trash"></span> Delete</a>
+		</div>
+	</li>
+	[% END %]
+	
 </ul>
 
 	

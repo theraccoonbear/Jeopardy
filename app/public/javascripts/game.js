@@ -56,4 +56,12 @@ $(function() {
 			});
 		});
 	}
+
+	if (typeof $jArchiveSubmit !== 'undefined') {
+		$jArchiveSubmit.on('click', function(e) {
+			var $form = $jArchiveSubmit.closest('form');
+			$form.attr('action', '/game/j-archive/' + $jArchiveId.val());
+			$form.submit();
+		});
+	}
 });

@@ -72,28 +72,111 @@ my $season_scraper = scraper {
 	};
 };
 
-my $game_scraper = scraper {
-	process '#game_title h1', 'name' => 'TEXT';
-	process '#jeopardy_round', 'jeopardy_round' => scraper {
-		process 'table.round .category_name', 'categories[]' => 'TEXT';
-		foreach my $idx (1..5) {
-			process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_text', 'answer_' . ($idx * 200) . '[]' => 'TEXT';
-			process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_header td:nth-child(2)', 'daily_double_' . ($idx * 200) . '[]' => sub {
-				my $v = $_->as_trimmed_text();
-				return $v =~ m/DD:/xsm ? 1 : 0;
+my $round_scraper = scraper {
+	process 'table.round .category_name', 'categories[]' => 'TEXT';
+	foreach my $idx (1..5) {
+		process 'table.round > tr', 'scores[]' => scraper {
+			process 'td.clue', 'clues[]' => scraper {
+				process '.clue_text', 'answer' => 'TEXT';
+				process '.clue_header td:nth-child(2)', 'value' => sub {
+					my $v = $_->as_trimmed_text();
+					$v =~ s/[^\d]+//gsmx;
+					return 1 * $v;
+				};
+
+				process '.clue_header td:nth-child(2)', 'daily_double' => sub {
+					my $v = $_->as_trimmed_text();
+					return $v =~ m/DD:/xsm ? 1 : 0;
+				};
+
+				process 'div[onmouseover]', 'question' => sub {
+					my $omo = $_->attr('onmouseover');
+					if ($omo =~ m/correct_response">(?<resp>.+?)<\/em/gismx) {
+						return $+{resp};
+					}
+					return $omo;
+				};
 			};
-			process 'table.round > tr:nth-child(' . ($idx + 1) . ') div[onmouseover]', 'question_' . ($idx * 200) . '[]' => sub {
-				my $omo = $_->attr('onmouseover');
-				if ($omo =~ m/correct_response">(?<resp>.+?)<\/em/gismx) {
-					return $+{resp};
-				}
-				return $omo;
-			};
-		}
-	};
+		};
+		
+		# process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_text', 'answer_' . ($idx * 200) . '[]' => 'TEXT';
+		# process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_header td:nth-child(2)', 'value_' . ($idx * 200) . '[]' => sub {
+		# 	my $v = $_->as_trimmed_text();
+		# 	$v =~ s/[^\d]+//gsmx;
+		# 	return 1 * $v;
+		# };
+		# process 'table.round > tr:nth-child(' . ($idx + 1) . ') .clue_header td:nth-child(2)', 'daily_double_' . ($idx * 200) . '[]' => sub {
+		# 	my $v = $_->as_trimmed_text();
+		# 	return $v =~ m/DD:/xsm ? 1 : 0;
+		# };
+		# process 'table.round > tr:nth-child(' . ($idx + 1) . ') div[onmouseover]', 'question_' . ($idx * 200) . '[]' => sub {
+		# 	my $omo = $_->attr('onmouseover');
+		# 	if ($omo =~ m/correct_response">(?<resp>.+?)<\/em/gismx) {
+		# 		return $+{resp};
+		# 	}
+		# 	return $omo;
+		# };
+	}
 };
 
-sub getGame {
+my $game_scraper = scraper {
+	process '#game_title h1', 'name' => 'TEXT';
+	process '#jeopardy_round', 'jeopardy_round' => $round_scraper;
+	process '#double_jeopardy_round', 'double_jeopardy_round' => $round_scraper;
+};
+
+sub processRound {
+	my ($self, $scraped) = @_;
+
+	my $round = {};
+	$round->{categories} = [
+		map {
+			{ name => $_ }
+		} @{ $scraped->{categories} }
+	];
+	$round->{answers} = [];
+
+	foreach my $val_idx (1..5) {
+		my $round_values = [
+			grep { 
+				defined $_ 
+			} 
+			map { 
+				$_->{value}
+			} @{ $scraped->{scores}->[$val_idx]->{clues} }];
+		
+		say STDERR "ROUND VALUES:";
+		p($round_values);
+			
+			#$scraped->{'value_' . ($val_idx * 200)};
+		my $count = {};
+		foreach (@$round_values) {
+			$count->{$_}++;
+		}
+		
+		my $value = (sort { $count->{$b} <=> $count->{$a} } keys %$count)[0];
+
+
+
+		push @{ $round->{answers} }, {
+			points => [ map {
+				{ 
+					# answer => $scraped->{'answer_' . ($val_idx * 200)}[$_],
+					# question => $scraped->{'question_' . ($val_idx * 200)}[$_],
+					# daily_double => ($scraped->{'daily_double_' . ($val_idx * 200)}[$_] ? 1 : 0),
+					# value => $value
+					answer => $scraped->{scores}->[$val_idx]->{clues}->[$_]->{answer},
+					question => $scraped->{scores}->[$val_idx]->{clues}->[$_]->{question},
+					daily_double => $scraped->{scores}->[$val_idx]->{clues}->[$_]->{daily_double} ? 1 : 0,
+					value => defined $scraped->{scores}->[$val_idx]->{clues}->[$_]->{answer} ? $value : ''
+				}
+			} (0..5)]
+		};
+	}
+	return $round;
+}
+
+sub getFullGame {
 	my ($self, $id) = @_;
 	my $url = my $season_url = $self->base_url . '/showgame.php?game_id=' . $id;
 	my $game = {};
@@ -104,31 +187,28 @@ sub getGame {
 	if ($self->mech->success) {
 		my $content = $self->mech->content;
 		my $results = $game_scraper->scrape($content);
-		$game->{name} = $results->{name};
-		$game->{categories} = [
-			map {
-				{ name => $_ }
-			} @{ $results->{jeopardy_round}->{categories} }
-		];
-		$game->{answers} = [];
+		say STDERR ":::RESULTS:::";
+		p($results);
+		say STDERR ":::/RESULTS:::";
+		my $round_1 = $self->processRound($results->{jeopardy_round});
+		$round_1->{name} = $results->{name} . ' (Round 1)';
+		$round_1->{jarchive_id} = $id;
+		$round_1->{round} = 'jeopardy';
+		$round_1->{fetched} = DateTime->now();
 
-		foreach my $val_idx (1..5) {
-			push @{ $game->{answers} }, {
-				points => [ map {
-					{ 
-						answer => $results->{jeopardy_round}->{'answer_' . ($val_idx * 200)}[$_],
-						question => $results->{jeopardy_round}->{'question_' . ($val_idx * 200)}[$_],
-						daily_double => ($results->{jeopardy_round}->{'daily_double_' . ($val_idx * 200)}[$_] ? 1 : 0),
-						value => ($val_idx * 200)
-					}
-				} (0..5)]
-			};
-		}
-		$game->{jarchive_id} = $id;
-		$game->{fetched} = DateTime->now();
+		my $round_2 = $self->processRound($results->{double_jeopardy_round}, 400);
+		$round_2->{name} = $results->{name} . ' (Round 2)';
+		$round_2->{jarchive_id} = $id;
+		$round_2->{round} = 'double_jeopardy';
+		$round_2->{fetched} = DateTime->now();
+
+		$game->{jeopardy} = $round_1;
+		$game->{double_jeopardy} = $round_2;
 	}
 
-	#p($game);
+	say STDERR ":::GAME:::";
+	p($game);
+	say STDERR ":::/GAME:::";
 
 	return $game;
 }

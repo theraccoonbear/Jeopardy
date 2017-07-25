@@ -53,6 +53,7 @@ sub add {
 			}
 		} (1..6)]};
 	} (1..5)];
+
 	my $coll = $self->collection();
 
 	return $coll->insert_one($game);

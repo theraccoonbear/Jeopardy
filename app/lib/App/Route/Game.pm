@@ -64,7 +64,7 @@ get '/edit/:game_id?' => sub {
 	var 'game' => $game;
 	var 'extra_scripts' => ['game.js'];
 
-	p($game);
+	#p($game);
 	#say STDERR json_encode($game);
 	return template 'game/edit', {
 		game => $game
@@ -192,18 +192,24 @@ get '/j-archive/:game_id' => sub {
 	if ($game_id) {
 		my $ids = [split /-/xsm, $game_id];
 		my $base_id = $ids->[0];
-		my $span = scalar @{$ids} < 2 ? 1 : ($ids->[1] - $base_id );
+		my $span = scalar @{$ids} < 2 ? 0 : ($ids->[1] - $base_id );
 		my $last_id;
 		say STDERR "Grabbing from $base_id to " . ($base_id + $span);
 
 		foreach my $idx (0..$span) {
 			my $fetch_id = $base_id + $idx;
 			say STDERR "Fetching j-archive #". $fetch_id;
-			my $game = $jarchive->getGame($fetch_id);
-			$game->{owner} = session('username');
-			my $new_game = $games->add($game);
+			my $fullGame = $jarchive->getFullGame($fetch_id);
+
+			$fullGame->{jeopardy}->{owner} = session('username');
+			my $new_game = $games->add($fullGame->{jeopardy});
 			$last_id = $new_game->inserted_id;
-			say STDERR "Stored #" . $fetch_id . " as " . $last_id;
+			say STDERR "Stored #" . $fetch_id . " round 1 as " . $last_id;
+
+			$fullGame->{double_jeopardy}->{owner} = session('username');
+			$new_game = $games->add($fullGame->{double_jeopardy});
+			$last_id = $new_game->inserted_id;
+			say STDERR "Stored #" . $fetch_id . " round 2 as " . $last_id;
 		}
 
 		redirect '/game/edit/' . $last_id;
