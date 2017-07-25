@@ -400,6 +400,7 @@ $(function() {
 			}));
 
 			if (running) {
+				// @todo handle empty questions corretly
 				$('.point').on('click', function(e) {
 					var $this = $(this);
 					if (!$this.hasClass('claimed')) {
